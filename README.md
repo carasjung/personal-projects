@@ -3,4 +3,4 @@
 
 ## Work
 * contract-parser
-- This program parses legal contracts in bulk to extract specific information and saves it as CSV file
+  - This program parses legal contracts in bulk to extract specific information and saves it as CSV file
