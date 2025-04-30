@@ -131,11 +131,7 @@ def save_as_csv(df, output_path="output/csv/parsed_contracts.csv"):
     df.to_csv(output_path, index=False)
     print(f"\nSaved results to {output_path}")
 
-def main():
-    """If using GDrive, for input update:
-    default='/content/drive/MyDrive/your_folder_with_pdfs/
-    For output update:
-    default='/content/drive/MyDrive/your_output_folder/parsed_contracts.csv'"""
+def main(): # See below for Google Colab version
     parser = argparse.ArgumentParser(description="Contract Parser CLI")
     parser.add_argument("--input", type=str, default="contracts/", help="Input folder containing PDF contracts")
     parser.add_argument("--output", type=str, default="output/csv/parsed_contracts.csv", help="Output CSV file path")
@@ -154,3 +150,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+'''
+def main():
+    parser = argparse.ArgumentParser(description="Contract Parser CLI")
+    parser.add_argument("--input", type=str, default="/content/drive/MyDrive/path/to/folder/", help="Input folder containing PDF contracts")
+    parser.add_argument("--output", type=str, default="/content/drive/MyDrive/path/to/output/folder/parsed_contracts.csv", help="Output CSV file path")
+    args = parser.parse_args(['--input', '/content/drive/MyDrive/path/to/folder', '--ouptut', '/content/drive/MyDrive/path/to/output/folder/parsed_contracts.csv'])
+
+    Rest of code remains the same
+'''

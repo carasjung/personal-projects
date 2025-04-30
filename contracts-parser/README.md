@@ -11,8 +11,11 @@
 
 ## Required Libraries
 * Install spacy first: pip install spacy
-* Install date-spacy: pip install spacy
+* Install pdfminer: pip install pdfminer.six
 * Download the Eng nlp: python3 -m spacy download en_core_web_sm
+    - For colab:
+    - import spacy.cli
+      spacy.cli.download("en_core_web_sm")
 * If running directly on Google Colab, import drive
 * Additionally import os, re, pandas as pd, argparse
 * from pdfminer.high_level import extract_text
