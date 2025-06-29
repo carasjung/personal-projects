@@ -1,0 +1,65 @@
+# NEVER COMMIT DATA FILES
+data/
+final_datasets/
+*.csv
+*.parquet
+*.pkl
+*.h5
+*.joblib
+*.model
+*.bin
+
+# Training and cache directories
+**/training/*.csv
+**/training/*.parquet
+**/training/*.pkl
+marketing_cache/
+clustering_cache/
+integration_cache/
+clustering_results/
+logs/
+uploads/
+validation_reports/
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+env/
+venv/
+.venv/
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment variables
+.env*
+
+# Audio files
+*.mp3
+*.wav
+*.m4a
+*.flac
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+**/large_*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# Vercel
+.vercel
