@@ -31,13 +31,15 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
-
+    
+    console.log('Starting upload for file:', file.name);
     setUploading(true);
     setError(null);
     setUploadProgress(0);
 
     try {
-      // Upload file to Supabase Storage
+      // Step 1: Upload file to Supabase Storage
+      console.log('📁 Step 1: Uploading to storage...');
       setUploadProgress(25);
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -47,16 +49,23 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         .upload(fileName, file);
 
       if (uploadError) {
+        console.error('❌ Storage upload error:', uploadError);
         throw new Error(`File upload failed: ${uploadError.message}`);
       }
 
-      // Get public URL for the uploaded file
+      console.log('✅ Storage upload success:', fileData);
+
+      // Step 2: Get public URL for the uploaded file
+      console.log('🔗 Step 2: Getting public URL...');
       setUploadProgress(50);
       const { data: { publicUrl } } = supabase.storage
         .from('songs')
         .getPublicUrl(fileName);
 
-      // Create song record in database
+      console.log('✅ Public URL:', publicUrl);
+
+      // Step 3: Create song record in database
+      console.log('💾 Step 3: Creating database record...');
       setUploadProgress(75);
       const songData = {
         title: songMetadata.title || file.name.replace(/\.[^/.]+$/, ""),
@@ -64,10 +73,12 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         genre: songMetadata.genre,
         file_path: publicUrl,
         file_size: file.size,
-        duration: null, // Will be set by backend processing
+        duration: null,
         processing_status: 'pending',
         user_id: null, // No auth required for testing
       };
+
+      console.log('📝 Song data to insert:', songData);
 
       const { data: songRecord, error: dbError } = await supabase
         .from('songs')
@@ -76,14 +87,16 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         .single();
 
       if (dbError) {
+        console.error('❌ Database error:', dbError);
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      // Trigger backend processing (optional - for when you have your Python backend)
-      setUploadProgress(90);
+      console.log('✅ Database insert success:', songRecord);
+
+      // Step 4: Optional backend processing trigger
       try {
-        // This will call your Python backend when it's deployed
         if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'http://localhost:8000') {
+          console.log('🔄 Triggering backend processing...');
           fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/songs/analyze`, {
             method: 'POST',
             headers: {
@@ -94,18 +107,17 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               file_url: publicUrl,
               metadata: songData,
             }),
-          }).catch(console.error); // Don't fail if backend is not available
+          }).catch(console.error);
         }
       } catch (backendError) {
-        console.warn('Backend processing not available:', backendError);
-        // Continue anyway - this is optional
+        console.warn('⚠️ Backend processing not available:', backendError);
       }
 
       setUploadProgress(100);
       onUploadSuccess(songRecord);
       
     } catch (err: any) {
-      console.error('Upload error:', err);
+      console.error('💥 Upload error:', err);
       setError(err.message || 'Upload failed');
     } finally {
       setUploading(false);
@@ -218,7 +230,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               <Music className="h-16 w-16 text-gray-400 mb-6" />
               {isDragActive ? (
                 <p className="text-xl font-medium text-blue-600">
-                  Drop your song here! 
+                  Drop your song here!
                 </p>
               ) : (
                 <>
