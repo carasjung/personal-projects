@@ -66,7 +66,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         file_size: file.size,
         duration: null, // Will be set by backend processing
         processing_status: 'pending',
-        user_id: '00000000-0000-0000-0000-000000000000', // Temporary UUID for testing
+        user_id: 'demo-user-' + Date.now(), // Unique demo user ID
       };
 
       const { data: songRecord, error: dbError } = await supabase
