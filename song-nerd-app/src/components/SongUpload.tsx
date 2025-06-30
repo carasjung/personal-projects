@@ -1,4 +1,4 @@
-// src/components/SongUpload.tsx - FIXED VERSION
+// src/components/SongUpload.tsx - FIXED TYPE ERROR
 'use client'
 
 import React, { useState } from 'react';
@@ -43,7 +43,6 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
       
       if (listError) {
         setResult(prev => prev + `❌ Bucket access failed: ${listError.message}\n`);
-        setResult(prev => prev + `Error code: ${listError.error || 'unknown'}\n`);
         return;
       }
       
