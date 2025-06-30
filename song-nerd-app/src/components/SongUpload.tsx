@@ -37,7 +37,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     setUploadProgress(0);
 
     try {
-      // Step 1: Upload file to Supabase Storage
+      // Upload file to Supabase Storage
       setUploadProgress(25);
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -50,13 +50,13 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         throw new Error(`File upload failed: ${uploadError.message}`);
       }
 
-      // Step 2: Get public URL for the uploaded file
+      // Get public URL for the uploaded file
       setUploadProgress(50);
       const { data: { publicUrl } } = supabase.storage
         .from('songs')
         .getPublicUrl(fileName);
 
-      // Step 3: Create song record in database
+      // Create song record in database
       setUploadProgress(75);
       const songData = {
         title: songMetadata.title || file.name.replace(/\.[^/.]+$/, ""),
@@ -79,7 +79,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      // Step 4: Trigger backend processing (optional - for when you have your Python backend)
+      // Trigger backend processing (optional - for when you have your Python backend)
       setUploadProgress(90);
       try {
         // This will call your Python backend when it's deployed
@@ -126,7 +126,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Music Marketing AI
+          Song Nerd
         </h1>
         <p className="text-xl text-gray-600">
           Get AI-powered marketing insights for your music

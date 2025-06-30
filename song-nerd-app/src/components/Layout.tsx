@@ -38,7 +38,7 @@ export default function Layout({ children, currentPage = 'upload' }: LayoutProps
           <div className="flex grow flex-col overflow-y-auto pt-5 pb-4">
             <div className="flex items-center px-4">
               <Music className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Music AI</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">Song Nerd</span>
             </div>
             <nav className="mt-8 flex-1 space-y-1 px-2">
               {navigation.map((item) => (
@@ -66,7 +66,7 @@ export default function Layout({ children, currentPage = 'upload' }: LayoutProps
           <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
             <div className="flex items-center px-4">
               <Music className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Music AI</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">Song Nerd</span>
             </div>
             <nav className="mt-8 flex-1 space-y-1 px-2">
               {navigation.map((item) => (

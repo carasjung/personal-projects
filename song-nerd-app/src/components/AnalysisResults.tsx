@@ -190,7 +190,7 @@ export default function AnalysisResults({ songId, onBackToUpload }: AnalysisResu
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">Music Marketing AI</h1>
+              <h1 className="text-xl font-bold text-gray-900">Song Nerd</h1>
             </div>
             <button
               onClick={onBackToUpload}
@@ -206,7 +206,7 @@ export default function AnalysisResults({ songId, onBackToUpload }: AnalysisResu
         {/* Hero Section */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Marketing Analysis Complete! 🎉
+            Marketing Analysis Complete!
           </h1>
           <p className="text-xl text-gray-600 mb-4">
             Analysis for "{song?.title}" by {song?.artist_name}
