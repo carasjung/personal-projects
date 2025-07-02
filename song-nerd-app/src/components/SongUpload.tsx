@@ -7,6 +7,13 @@ import { Upload, Music, AlertCircle, Loader } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { songAPI } from '@/services/api';
 
+// Debug: Check if environment variables are loaded
+console.log('🔍 Environment Debug:', {
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  anonKeyStart: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...'
+});
+
 interface UploadResponse {
   id: string;
   title: string;
@@ -62,6 +69,27 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         processing_status: 'pending',
         user_id: null,
       };
+
+      console.log('🔍 Attempting to insert song data:', songData);
+
+      // Try the insert with more explicit error handling
+      const { data: songRecord, error: dbError } = await supabase
+        .from('songs')
+        .insert([songData]) // Note: wrapping in array
+        .select()
+        .single();
+
+      console.log('🔍 Insert response:', { data: songRecord, error: dbError });
+
+      if (dbError) {
+        console.error('❌ Database error details:', {
+          message: dbError.message,
+          code: dbError.code,
+          details: dbError.details,
+          hint: dbError.hint
+        });
+        throw new Error(`Database error: ${dbError.message} (Code: ${dbError.code})`);
+      }
 
       const { data: songRecord, error: dbError } = await supabase
         .from('songs')
