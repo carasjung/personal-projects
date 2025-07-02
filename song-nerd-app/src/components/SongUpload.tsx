@@ -1,10 +1,11 @@
-// src/components/SongUpload.tsx - SYNTAX FIXED
+// src/components/SongUpload.tsx
 'use client'
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Music, AlertCircle, Loader } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { songAPI } from '@/services/api';
 
 interface UploadResponse {
   id: string;
@@ -22,6 +23,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState('');
   const [songMetadata, setSongMetadata] = useState({
     title: '',
     artist_name: '',
@@ -32,26 +34,34 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    console.log('🎵 Testing database insert only...');
+    console.log('🎵 Starting full upload and analysis process...');
     setUploading(true);
     setError(null);
-    setUploadProgress(25);
+    setUploadProgress(0);
+    setCurrentStep('Preparing upload...');
 
     try {
-      // Test database insert without file upload
+      // Step 1: Upload file to Supabase Storage
+      setCurrentStep('Uploading file...');
+      setUploadProgress(20);
+      
+      const { url: fileUrl, path: filePath } = await songAPI.uploadFile(file, 'songs');
+      console.log('✅ File uploaded to:', fileUrl);
+
+      // Step 2: Create song record in database
+      setCurrentStep('Creating song record...');
+      setUploadProgress(40);
+
       const songData = {
         title: songMetadata.title || file.name.replace(/\.[^/.]+$/, ""),
         artist_name: songMetadata.artist_name || 'Unknown Artist',
         genre: songMetadata.genre,
-        file_path: `https://example.com/placeholder-${file.name}`, // Placeholder URL
+        file_path: fileUrl,
         file_size: file.size,
         duration: null,
         processing_status: 'pending',
         user_id: null,
       };
-
-      console.log('📝 Inserting song data:', songData);
-      setUploadProgress(75);
 
       const { data: songRecord, error: dbError } = await supabase
         .from('songs')
@@ -64,18 +74,52 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ Database insert successful:', songRecord);
+      console.log('✅ Song record created:', songRecord);
+
+      // Step 3: Trigger AI analysis via Railway backend
+      setCurrentStep('Starting AI analysis...');
+      setUploadProgress(60);
+
+      const metadata = {
+        title: songRecord.title,
+        artist: songRecord.artist_name,
+        genre: songRecord.genre,
+        file_size: songRecord.file_size
+      };
+
+      console.log('🤖 Triggering analysis via Railway backend...');
+      const analysisResponse = await songAPI.triggerAnalysis(
+        songRecord.id, 
+        fileUrl, 
+        metadata
+      );
+
+      console.log('✅ Analysis started:', analysisResponse);
+
+      // Step 4: Update song status to processing
+      setCurrentStep('Analysis in progress...');
+      setUploadProgress(80);
+
+      await songAPI.updateSongStatus(songRecord.id, 'processing');
+
+      setCurrentStep('Complete!');
       setUploadProgress(100);
       
-      // Success! This proves the flow works
-      onUploadSuccess(songRecord);
+      // Success! Pass the song record to parent component
+      setTimeout(() => {
+        onUploadSuccess(songRecord);
+      }, 500);
 
     } catch (err: any) {
       console.error('💥 Error:', err);
       setError(err.message || 'Upload failed');
+      setCurrentStep('');
     } finally {
-      setUploading(false);
-      setUploadProgress(0);
+      setTimeout(() => {
+        setUploading(false);
+        setUploadProgress(0);
+        setCurrentStep('');
+      }, 1000);
     }
   }, [songMetadata, onUploadSuccess]);
 
@@ -112,6 +156,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               onChange={(e) => setSongMetadata(prev => ({ ...prev, title: e.target.value }))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter song title"
+              disabled={uploading}
             />
           </div>
           
@@ -125,6 +170,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               onChange={(e) => setSongMetadata(prev => ({ ...prev, artist_name: e.target.value }))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter artist name"
+              disabled={uploading}
             />
           </div>
         </div>
@@ -137,6 +183,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
             value={songMetadata.genre}
             onChange={(e) => setSongMetadata(prev => ({ ...prev, genre: e.target.value }))}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={uploading}
           >
             <option value="pop">Pop</option>
             <option value="rock">Rock</option>
@@ -169,7 +216,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
             <>
               <Loader className="h-16 w-16 text-blue-500 animate-spin mb-4" />
               <p className="text-lg font-medium text-gray-900 mb-2">
-                Processing your song...
+                {currentStep}
               </p>
               <div className="w-full max-w-xs bg-gray-200 rounded-full h-2 mb-4">
                 <div 
@@ -215,6 +262,9 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
             <AlertCircle className="h-5 w-5 text-red-400 mr-3" />
             <div>
               <p className="text-sm text-red-800">{error}</p>
+              <p className="text-xs text-red-600 mt-1">
+                Check browser console for more details
+              </p>
             </div>
           </div>
         </div>

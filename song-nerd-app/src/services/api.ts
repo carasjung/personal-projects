@@ -1,6 +1,9 @@
 // src/services/api.ts
 import { supabase } from '@/lib/supabase';
 
+// Get the API URL from environment variables
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://song-nerd.up.railway.app';
+
 export const songAPI = {
   // Get user's songs
   getUserSongs: async (userId?: string) => {
@@ -23,7 +26,6 @@ export const songAPI = {
       .select('*')
       .eq('id', songId)
       .single();
-
     if (songError) throw songError;
 
     const { data: analysis } = await supabase
@@ -70,5 +72,56 @@ export const songAPI = {
       .getPublicUrl(fileName);
     
     return { path: data.path, url: publicUrl };
+  },
+
+  // NEW: Trigger analysis via Railway backend (from URL)
+  triggerAnalysis: async (songId: string, fileUrl: string, metadata: any) => {
+    const response = await fetch(`${API_BASE_URL}/api/songs/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        song_id: songId,
+        file_url: fileUrl,
+        metadata: metadata
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Analysis request failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // NEW: Upload and analyze via Railway backend (direct file upload)
+  uploadAndAnalyze: async (file: File, songId: string, metadata: any) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('song_id', songId);
+    formData.append('metadata', JSON.stringify(metadata));
+
+    const response = await fetch(`${API_BASE_URL}/api/songs/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload and analysis failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  // NEW: Check backend health
+  checkBackendHealth: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`);
+      return response.ok;
+    } catch (error) {
+      console.error('Backend health check failed:', error);
+      return false;
+    }
   }
 };
