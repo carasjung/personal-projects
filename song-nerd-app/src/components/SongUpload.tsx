@@ -41,102 +41,63 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    console.log('🎵 Starting full upload and analysis process...');
-    setUploading(true);
-    setError(null);
-    setUploadProgress(0);
-    setCurrentStep('Preparing upload...');
+    console.log('🔍 Attempting to insert song data:', songData);
 
-    try {
-      // Step 1: Upload file to Supabase Storage
-      setCurrentStep('Uploading file...');
-      setUploadProgress(20);
-      
-      const { url: fileUrl, path: filePath } = await songAPI.uploadFile(file, 'songs');
-      console.log('✅ File uploaded to:', fileUrl);
+    // Try the insert with more explicit error handling
+    const { data: newSongRecord, error: dbError } = await supabase
+      .from('songs')
+      .insert([songData])
+      .select()
+      .single();
+    
+    console.log('🔍 Insert response:', { data: newSongRecord, error: dbError });
+    
+    if (dbError) {
+      console.error('❌ Database error details:', {
+        message: dbError.message,
+        code: dbError.code,
+        details: dbError.details,
+        hint: dbError.hint
+      });
+      throw new Error(`Database error: ${dbError.message} (Code: ${dbError.code})`);
+    }
+    
+    console.log('✅ Song record created:', newSongRecord);
+    
+    // Step 3: Trigger AI analysis via Railway backend
+    setCurrentStep('Starting AI analysis...');
+    setUploadProgress(60);
+    
+    const metadata = {
+      title: newSongRecord.title,  // <-- Updated to use newSongRecord
+      artist: newSongRecord.artist_name,  // <-- Updated
+      genre: newSongRecord.genre,  // <-- Updated
+      file_size: newSongRecord.file_size  // <-- Updated
+    };
+    
+    console.log('🤖 Triggering analysis via Railway backend...');
+    const analysisResponse = await songAPI.triggerAnalysis(
+      newSongRecord.id,  // <-- Updated
+      fileUrl, 
+      metadata
+    );
+    
+    console.log('✅ Analysis started:', analysisResponse);
+    
+    // Step 4: Update song status to processing
+    setCurrentStep('Analysis in progress...');
+    setUploadProgress(80);
+    
+    await songAPI.updateSongStatus(newSongRecord.id, 'processing');  // <-- Updated
+    
+    setCurrentStep('Complete!');
+    setUploadProgress(100);
+    
+    // Success! Pass the song record to parent component
+    setTimeout(() => {
+      onUploadSuccess(newSongRecord);  // <-- Updated
+    }, 500);
 
-      // Step 2: Create song record in database
-      setCurrentStep('Creating song record...');
-      setUploadProgress(40);
-
-      const songData = {
-        title: songMetadata.title || file.name.replace(/\.[^/.]+$/, ""),
-        artist_name: songMetadata.artist_name || 'Unknown Artist',
-        genre: songMetadata.genre,
-        file_path: fileUrl,
-        file_size: file.size,
-        duration: null,
-        processing_status: 'pending',
-        user_id: null,
-      };
-
-      console.log('🔍 Attempting to insert song data:', songData);
-
-      // Try the insert with more explicit error handling
-      const { data: songRecord, error: dbError } = await supabase
-        .from('songs')
-        .insert([songData]) // Note: wrapping in array
-        .select()
-        .single();
-
-      console.log('🔍 Insert response:', { data: songRecord, error: dbError });
-
-      if (dbError) {
-        console.error('❌ Database error details:', {
-          message: dbError.message,
-          code: dbError.code,
-          details: dbError.details,
-          hint: dbError.hint
-        });
-        throw new Error(`Database error: ${dbError.message} (Code: ${dbError.code})`);
-      }
-
-      const { data: songRecord, error: dbError } = await supabase
-        .from('songs')
-        .insert(songData)
-        .select()
-        .single();
-
-      if (dbError) {
-        console.error('❌ Database error:', dbError);
-        throw new Error(`Database error: ${dbError.message}`);
-      }
-
-      console.log('✅ Song record created:', songRecord);
-
-      // Step 3: Trigger AI analysis via Railway backend
-      setCurrentStep('Starting AI analysis...');
-      setUploadProgress(60);
-
-      const metadata = {
-        title: songRecord.title,
-        artist: songRecord.artist_name,
-        genre: songRecord.genre,
-        file_size: songRecord.file_size
-      };
-
-      console.log('🤖 Triggering analysis via Railway backend...');
-      const analysisResponse = await songAPI.triggerAnalysis(
-        songRecord.id, 
-        fileUrl, 
-        metadata
-      );
-
-      console.log('✅ Analysis started:', analysisResponse);
-
-      // Step 4: Update song status to processing
-      setCurrentStep('Analysis in progress...');
-      setUploadProgress(80);
-
-      await songAPI.updateSongStatus(songRecord.id, 'processing');
-
-      setCurrentStep('Complete!');
-      setUploadProgress(100);
-      
-      // Success! Pass the song record to parent component
-      setTimeout(() => {
-        onUploadSuccess(songRecord);
-      }, 500);
 
     } catch (err: any) {
       console.error('💥 Error:', err);
