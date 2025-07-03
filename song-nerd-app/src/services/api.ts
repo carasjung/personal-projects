@@ -56,25 +56,55 @@ export const songAPI = {
     return data;
   },
 
-  // Upload file to Supabase Storage
+  // Upload file to Supabase Storage - FIXED VERSION
   uploadFile: async (file: File, bucket: string = 'songs') => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file);
-    
-    if (error) throw error;
-    
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
-    
-    return { path: data.path, url: publicUrl };
+    try {
+      console.log('📁 Starting file upload to Supabase Storage...');
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      console.log(`📁 Uploading as: ${fileName}`);
+      
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+      
+      if (uploadError) {
+        console.error('❌ Storage upload error:', uploadError);
+        throw new Error(`Storage upload failed: ${uploadError.message}`);
+      }
+      
+      console.log('✅ Upload successful:', uploadData);
+      
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(fileName);
+      
+      if (!urlData?.publicUrl) {
+        throw new Error('Failed to get public URL');
+      }
+      
+      console.log('✅ Public URL generated:', urlData.publicUrl);
+      
+      return { 
+        path: uploadData.path, 
+        url: urlData.publicUrl 
+      };
+      
+    } catch (error: any) {
+      console.error('💥 Upload file error:', error);
+      throw new Error(`File upload failed: ${error.message}`);
+    }
   },
 
-  // NEW: Trigger analysis via Railway backend (from URL)
+  // Trigger analysis via Railway backend (from URL)
   triggerAnalysis: async (songId: string, fileUrl: string, metadata: any) => {
     const response = await fetch(`${API_BASE_URL}/api/songs/analyze`, {
       method: 'POST',
@@ -95,7 +125,7 @@ export const songAPI = {
     return response.json();
   },
 
-  // NEW: Upload and analyze via Railway backend (direct file upload)
+  // Upload and analyze via Railway backend (direct file upload)
   uploadAndAnalyze: async (file: File, songId: string, metadata: any) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -114,7 +144,7 @@ export const songAPI = {
     return response.json();
   },
 
-  // NEW: Check backend health
+  // Check backend health
   checkBackendHealth: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/health`);

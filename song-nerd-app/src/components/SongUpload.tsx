@@ -1,10 +1,11 @@
-// src/components/SongUpload.tsx - TEST VERSION
+// src/components/SongUpload.tsx - FINAL WORKING VERSION
 'use client'
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Music, AlertCircle, Loader } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { songAPI } from '@/services/api';
 
 // Debug: Check if environment variables are loaded
 console.log('🔍 Environment Debug:', {
@@ -40,15 +41,23 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    console.log('🎵 Testing database insert only...');
+    console.log('🎵 Starting full upload and analysis process...');
     setUploading(true);
     setError(null);
-    setUploadProgress(50);
-    setCurrentStep('Testing database...');
+    setUploadProgress(0);
+    setCurrentStep('Preparing upload...');
 
     try {
-      // Skip file upload, use placeholder URL
-      const fileUrl = `https://placeholder.com/${file.name}`;
+      // Step 1: Upload file to Supabase Storage
+      setCurrentStep('Uploading file...');
+      setUploadProgress(20);
+      
+      const { url: fileUrl, path: filePath } = await songAPI.uploadFile(file, 'songs');
+      console.log('✅ File uploaded to:', fileUrl);
+
+      // Step 2: Create song record in database
+      setCurrentStep('Creating song record...');
+      setUploadProgress(40);
 
       const songData = {
         title: songMetadata.title || file.name.replace(/\.[^/.]+$/, ""),
@@ -61,8 +70,8 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         user_id: null,
       };
 
-      console.log('🔍 Testing insert with:', songData);
-      
+      console.log('🔍 Creating song record with:', songData);
+
       const { data: newSongRecord, error: dbError } = await supabase
         .from('songs')
         .insert([songData])
@@ -74,24 +83,52 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ Database insert successful!', newSongRecord);
-      setCurrentStep('Success!');
+      console.log('✅ Song record created:', newSongRecord);
+
+      // Step 3: Trigger AI analysis via Railway backend
+      setCurrentStep('Starting AI analysis...');
+      setUploadProgress(60);
+
+      const metadata = {
+        title: newSongRecord.title,
+        artist: newSongRecord.artist_name,
+        genre: newSongRecord.genre,
+        file_size: newSongRecord.file_size
+      };
+
+      console.log('🤖 Triggering analysis via Railway backend...');
+      const analysisResponse = await songAPI.triggerAnalysis(
+        newSongRecord.id,
+        fileUrl,
+        metadata
+      );
+
+      console.log('✅ Analysis started:', analysisResponse);
+
+      // Step 4: Update song status to processing
+      setCurrentStep('Analysis in progress...');
+      setUploadProgress(80);
+
+      await songAPI.updateSongStatus(newSongRecord.id, 'processing');
+
+      setCurrentStep('Complete!');
       setUploadProgress(100);
 
-      // Call success callback
+      // Success! Pass the song record to parent component
       setTimeout(() => {
         onUploadSuccess(newSongRecord);
-      }, 1000);
+      }, 500);
 
     } catch (err: any) {
       console.error('💥 Error:', err);
-      setError(err.message || 'Database test failed');
+      setError(err.message || 'Upload failed');
+      setCurrentStep('');
     } finally {
       setTimeout(() => {
         setUploading(false);
         setUploadProgress(0);
         setCurrentStep('');
-      }, 2000);
+      }, 1000);
     }
   }, [songMetadata, onUploadSuccess]);
 
@@ -108,10 +145,10 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Song Nerd - TEST MODE
+          Song Nerd
         </h1>
         <p className="text-xl text-gray-600">
-          Testing database connection only
+          Get AI-powered marketing insights for your music
         </p>
       </div>
 
@@ -208,13 +245,17 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               ) : (
                 <>
                   <p className="text-xl font-medium text-gray-900 mb-2">
-                    Drop any file to test database
+                    Drag & drop your song here
                   </p>
                   <p className="text-gray-500 mb-4">
-                    (This is just testing the database connection)
+                    or click to browse files
                   </p>
                   <div className="flex items-center space-x-2 text-sm text-gray-400">
-                    <span>Any file type works for this test</span>
+                    <span>Supports:</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded">MP3</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded">WAV</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded">M4A</span>
+                    <span className="bg-gray-100 px-2 py-1 rounded">FLAC</span>
                   </div>
                 </>
               )}
