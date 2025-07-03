@@ -22,14 +22,9 @@ app = FastAPI(title="Song Nerd API", version="1.0.0")
 # CORS middleware - Update with your Vercel URL
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://personal-projects-4zvnjy9tx-caras-projects-afd78f2d.vercel.app",  # Your actual Vercel URL
-        "https://*.vercel.app",  # All Vercel apps
-        "http://localhost:3000",  # Local development
-        "https://localhost:3000"
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origins=["*"],  # Allow all origins (for testing only)
+    allow_credentials=False,  # Must be False when using allow_origins=["*"]
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
