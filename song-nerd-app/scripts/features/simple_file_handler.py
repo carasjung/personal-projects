@@ -86,7 +86,7 @@ class SimpleAudioFileHandler:
 # Test the simplified file handler
 def test_simple_file_handler():
     """Test the simplified file handler"""
-    print("🔧 Testing Simplified File Handler...")
+    print("Testing Simplified File Handler...")
     
     handler = SimpleAudioFileHandler()
     
@@ -100,20 +100,20 @@ def test_simple_file_handler():
             break
     
     if not test_file:
-        print("❌ No audio files found for testing")
+        print("No audio files found for testing")
         return False
     
-    print(f"📁 Testing with: {test_file}")
+    print(f"Testing with: {test_file}")
     
     # Test validation
     is_valid, errors = handler.validate_file(test_file)
     if is_valid:
-        print("✅ File validation passed")
+        print("File validation passed")
         
         # Test conversion
         try:
             converted_path, metadata = handler.convert_to_standard_format(test_file)
-            print(f"✅ File converted successfully")
+            print(f"File converted successfully")
             print(f"   Output: {converted_path}")
             print(f"   Duration: {metadata['duration_seconds']:.1f}s")
             print(f"   Sample rate: {metadata['sample_rate']}Hz")
@@ -121,14 +121,14 @@ def test_simple_file_handler():
             
             # Cleanup
             handler.cleanup_temp_files()
-            print("✅ Cleanup completed")
+            print("Cleanup completed")
             return True
             
         except Exception as e:
-            print(f"❌ Conversion failed: {e}")
+            print(f"Conversion failed: {e}")
             return False
     else:
-        print(f"❌ File validation failed: {errors}")
+        print(f"File validation failed: {errors}")
         return False
 
 if __name__ == "__main__":

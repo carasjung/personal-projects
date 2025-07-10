@@ -18,8 +18,8 @@ class DemographicsPredictor:
         self.label_encoders = {}
         
     def prepare_features(self, df):
-        """Prepare features using your actual data structure"""
-        # Audio features from your master dataset
+        """Prepare features using actual data structure"""
+        # Audio features from master dataset
         audio_features = ['danceability', 'energy', 'valence', 'acousticness', 
                          'instrumentalness', 'liveness', 'speechiness']
         

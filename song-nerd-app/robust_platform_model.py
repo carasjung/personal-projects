@@ -190,7 +190,7 @@ class RobustPlatformRecommender:
             scores = target_data[platform]['scores']
             success_labels = target_data[platform]['success']
             
-            # Stage 1: Binary classification (will this song be successful on this platform?)
+            # Binary classification (will this song be successful on this platform?)
             self.success_models[platform] = RandomForestClassifier(
                 n_estimators=100,
                 max_depth=8,
@@ -201,7 +201,7 @@ class RobustPlatformRecommender:
             )
             self.success_models[platform].fit(X_scaled, success_labels)
             
-            # Stage 2: Regression for successful songs only
+            # Regression for successful songs only
             successful_mask = success_labels == 1
             if successful_mask.sum() > 10:  # Need at least 10 successful examples
                 X_successful = X_scaled[successful_mask]
@@ -269,7 +269,7 @@ class RobustPlatformRecommender:
                 else:
                     X[col] = X[col].fillna(0)
         
-        # Scale features
+        # Scale
         X_scaled = self.scaler.transform(X)
         
         # Predict for each platform
@@ -277,10 +277,10 @@ class RobustPlatformRecommender:
         
         for platform in self.platform_names:
             if platform in self.success_models:
-                # Stage 1: Predict success probability
+                # Predict success probability
                 success_prob = self.success_models[platform].predict_proba(X_scaled)[0][1]
                 
-                # Stage 2: Predict score if likely to be successful
+                # Predict score if likely to be successful
                 if self.score_models[platform] is not None and success_prob > 0.3:
                     predicted_score = self.score_models[platform].predict(X_scaled)[0]
                     # Weight by success probability
@@ -437,7 +437,7 @@ def train_robust_platform_model():
     print("ROBUST PLATFORM MODEL TRAINING")
     print("="*60)
     
-    # First, run data analysis to understand the platform data
+    # Run data analysis to understand the platform data first
     print("Step 1: Analyzing platform data...")
     try:
         exec(open('platform_data_analysis.py').read())
@@ -485,7 +485,7 @@ def train_robust_platform_model():
     
     # Evaluate model
     print("\n" + "="*60)
-    print("MODEL EVALUATION")
+    print("Model Evaluation")
     print("="*60)
     platform_model.evaluate_model(test_df, use_synthetic=use_synthetic)
     
@@ -522,11 +522,9 @@ def train_robust_platform_model():
 def train_with_current_data():
     """Train using your current integrated_platform_training.csv with robustness improvements"""
     
-    print("="*60) 
-    print("TRAINING WITH CURRENT DATA")
-    print("="*60)
+    print("Training with current data")
     
-    # Load your current data
+    # Load current data
     try:
         training_data = pd.read_csv('integrated_platform_training.csv')
         print(f"Loaded training data: {training_data.shape}")
@@ -546,7 +544,7 @@ def train_with_current_data():
     # Create simple synthetic data to augment sparse real data
     print("\nCreating synthetic data to improve training...")
     
-    # For each song, create rule-based platform scores
+    # Create rule-based platform scores for each song
     enhanced_data = training_data.copy()
     
     for platform in ['spotify', 'tiktok', 'youtube']:

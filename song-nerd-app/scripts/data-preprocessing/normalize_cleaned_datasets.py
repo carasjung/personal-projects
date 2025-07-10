@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 from normalize_names import clean_artist_name, clean_track_name, extract_featured_artists
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -26,7 +25,7 @@ class DatasetNormalizer:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Configurable column mappings (can be extended)
+        # Configurable column mappings 
         self.artist_columns = ['artist', 'artist_name', 'artists', 'main_artist', 'performer']
         self.track_columns = ['track', 'track_name', 'name', 'song', 'song_name', 'title']
         
@@ -41,7 +40,6 @@ class DatasetNormalizer:
     
     def find_column(self, df: pd.DataFrame, possible_columns: List[str]) -> Optional[str]:
         """Find the first matching column from a list of possibilities."""
-        # Case-insensitive matching
         df_columns_lower = [col.lower() for col in df.columns]
         
         for col in possible_columns:
@@ -71,7 +69,7 @@ class DatasetNormalizer:
             filename: Optional filename for logging
             
         Returns:
-            Dataframe with normalized columns added
+            DF with normalized columns added
         """
         if not self.validate_dataframe(df, filename):
             return df
@@ -164,10 +162,10 @@ class DatasetNormalizer:
             original_rows = len(df)
             self.stats['total_rows'] += original_rows
             
-            # Normalize the dataframe
+            # Normalize dataframe
             df_normalized = self.normalize_artist_track_columns(df, filepath.name)
             
-            # Generate output filename
+            # Create output filename
             output_filename = filepath.name.replace("_clean.csv", "_normalized.csv")
             output_path = self.output_dir / output_filename
             
@@ -228,7 +226,7 @@ class DatasetNormalizer:
         return self.stats
     
     def generate_summary_report(self) -> pd.DataFrame:
-        """Generate a summary report of the normalization process."""
+        """Create summary report of the normalization process."""
         # This could be expanded to include per-file statistics
         summary_data = {
             'metric': ['files_processed', 'total_rows', 'rows_with_artist', 'rows_with_track', 'errors'],

@@ -27,15 +27,12 @@ def convert_to_json_safe(data):
     """Convert data to JSON-safe format"""
     return json.loads(json.dumps(data, cls=NumpyEncoder))
 
-# Import Supabase
 from supabase_config import get_supabase_client, get_admin_client
 from supabase import Client
 
-# Import existing modules
 from direct_audio_test import extract_audio_features_direct
 from integrated_analyzer import MusicMarketingAnalyzer
 
-# Global ML analyzer
 analyzer = None
 
 @asynccontextmanager
@@ -43,39 +40,38 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     global analyzer
     
-    # Startup
-    print("🚀 Starting Music Marketing API with Supabase...")
+    print("Starting Music Marketing API with Supabase...")
     
     # Test Supabase connection
     try:
         supabase = get_supabase_client()
         result = supabase.table('songs').select('id').limit(1).execute()
-        print("✅ Supabase connection successful!")
+        print("Supabase connection successful!")
     except Exception as e:
-        print(f"❌ Supabase connection failed: {e}")
+        print(f"Supabase connection failed: {e}")
         print("Make sure you've:")
         print("1. Created your Supabase project")
         print("2. Added credentials to .env file") 
         print("3. Created the database tables")
     
     # Load ML models
-    print("📊 Loading ML models...")
+    print("Loading ML models...")
     try:
         analyzer = MusicMarketingAnalyzer()
         analyzer.load_models()
         
         if analyzer.models_loaded:
-            print("✅ ML models loaded successfully!")
+            print("ML models loaded successfully!")
         else:
-            print("⚠️  ML models not fully loaded, will use basic analysis")
+            print("ML models not fully loaded, will use basic analysis")
     except Exception as e:
-        print(f"❌ Error loading ML models: {e}")
+        print(f"Error loading ML models: {e}")
         analyzer = None
     
     yield
     
     # Shutdown
-    print("🛑 Shutting down API...")
+    print("Shutting down API...")
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -101,7 +97,7 @@ def get_supabase() -> Client:
 async def root():
     """Health check endpoint"""
     return {
-        "message": "🎤 Music Marketing AI with Supabase",
+        "message": "Music Marketing AI with Supabase",
         "status": "running",
         "version": "1.0.0",
         "models_loaded": analyzer is not None and getattr(analyzer, 'models_loaded', False),
@@ -169,7 +165,7 @@ def process_song_with_supabase(song_id: str, file_path: str, metadata: dict):
             'processing_status': 'processing'
         }).eq('id', song_id).execute()
         
-        print(f"🎵 Processing song {song_id}...")
+        print(f"Processing song {song_id}...")
         start_time = datetime.utcnow()
         
         # Extract audio features
@@ -240,10 +236,10 @@ def process_song_with_supabase(song_id: str, file_path: str, metadata: dict):
             'duration': features.get('duration')
         }).eq('id', song_id).execute()
         
-        print(f"✅ Song {song_id} processed successfully in {processing_time:.2f}s")
+        print(f"Song {song_id} processed successfully in {processing_time:.2f}s")
         
     except Exception as e:
-        print(f"❌ Error processing song {song_id}: {e}")
+        print(f"Error processing song {song_id}: {e}")
         supabase.table('songs').update({
             'processing_status': 'failed'
         }).eq('id', song_id).execute()
@@ -439,5 +435,5 @@ async def list_songs(supabase: Client = Depends(get_supabase)):
     return {"songs": result.data, "total": len(result.data)}
 
 if __name__ == "__main__":
-    print("🎤 Starting Music Marketing AI with Supabase...")
+    print("Starting Music Marketing AI with Supabase...")
     uvicorn.run(app, host="127.0.0.1", port=8000)

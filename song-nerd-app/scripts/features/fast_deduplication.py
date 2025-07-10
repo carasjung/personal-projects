@@ -492,24 +492,24 @@ class OptimizedMasterDataIntegrator:
         self.start_time = time.time()
         logger.info("Starting fast data integration pipeline...")
         
-        # 1. Load data
+        # Load data
         self.load_and_standardize_datasets()
         
         if not self.raw_datasets:
             logger.error("No datasets loaded. Check your file paths.")
             return None
         
-        # 2. Fuzzy matching
+        # Fuzzy matching
         self.perform_optimized_fuzzy_matching(threshold=fuzzy_threshold)
         
-        # 3. Create master dataset
+        # Create master dataset
         self.create_master_dataset_optimized()
         
-        # 4. Basic missing data handling (skip complex imputation for speed)
+        # Basic missing data handling (skip complex imputation for speed)
         if not skip_validation:
             self._handle_missing_data_fast()
         
-        # 5. Save results
+        # Save results
         self._save_fast_results()
         
         total_time = time.time() - self.start_time
@@ -711,12 +711,12 @@ if __name__ == "__main__":
     )
     
     if args.command in ['integrate', 'fast']:
-        print("🚀 Starting optimized data integration...")
+        print("Starting optimized data integration...")
         
         if args.sample_size:
-            print(f"📊 Using sample size: {args.sample_size} rows per file")
+            print(f"Using sample size: {args.sample_size} rows per file")
         if args.single_file:
-            print(f"📄 Processing single file: {args.single_file}")
+            print(f"Processing single file: {args.single_file}")
         
         results = integrator.run_fast_integration(
             fuzzy_threshold=args.fuzzy_threshold,
@@ -724,51 +724,51 @@ if __name__ == "__main__":
         )
         
         if results:
-            print("\n✅ INTEGRATION COMPLETE")
+            print("\nIntegration complete")
             summary = results['integration_summary']
-            print(f"📈 Master dataset: {summary['total_master_records']} unique tracks")
-            print(f"⏱️  Total time: {summary['total_time_seconds']}s")
-            print(f"🔗 Duplicate groups: {summary['duplicate_groups']}")
+            print(f"Master dataset: {summary['total_master_records']} unique tracks")
+            print(f"Total time: {summary['total_time_seconds']}s")
+            print(f"Duplicate groups: {summary['duplicate_groups']}")
             
-            print(f"\n📊 PERFORMANCE BREAKDOWN")
+            print(f"\nPerformance breakdown")
             for step, stats in results['performance_stats'].items():
                 print(f"  {step}: {stats['duration_seconds']}s ({stats['memory_mb']:.1f}MB)")
     
     elif args.command == 'validate':
-        print("🔍 Validating master dataset...")
+        print("Validating master dataset...")
         validation_results = integrator.validate_master_dataset()
         
         if validation_results:
-            print("\n✅ VALIDATION RESULTS")
-            print(f"📈 Total records: {validation_results['total_records']:,}")
+            print("\nValidation results")
+            print(f"Total records: {validation_results['total_records']:,}")
             
-            print(f"\n📊 DATA COMPLETENESS")
+            print(f"\nData completeness")
             for feature, completeness in validation_results['data_completeness'].items():
-                status = "✅" if completeness > 90 else "⚠️" if completeness > 70 else "❌"
+                status = "OK" if completeness > 90 else "Warning" if completeness > 70 else "Error"
                 print(f"  {status} {feature}: {completeness}%")
             
-            print(f"\n🔗 PLATFORM COVERAGE")
+            print(f"\nPlatform coverage")
             for platform, count in validation_results['platform_coverage'].items():
                 percentage = (count / validation_results['total_records']) * 100
                 print(f"  {platform.title()}: {count:,} tracks ({percentage:.1f}%)")
             
-            print(f"\n📁 SOURCE DISTRIBUTION")
+            print(f"\nSource distribution")
             for source, count in validation_results['source_distribution'].items():
                 percentage = (count / validation_results['total_records']) * 100
                 print(f"  {source}: {count:,} tracks ({percentage:.1f}%)")
         else:
-            print("❌ Validation failed. Make sure you've run integration first.")
+            print("Validation failed. Make sure you've run integration first.")
     
     elif args.command == 'search':
         if not args.query:
-            print("❌ Please provide a search query with --query")
+            print("Please provide a search query with --query")
             sys.exit(1)
         
-        print(f"🔍 Searching for: '{args.query}'")
+        print(f"Searching for: '{args.query}'")
         results = integrator.search_master_dataset(args.query, limit=args.limit)
         
         if results:
-            print(f"\n🎵 SEARCH RESULTS ({len(results)} found)")
+            print(f"\nSearch results ({len(results)} found)")
             print("="*60)
             
             for i, result in enumerate(results, 1):
@@ -788,5 +788,5 @@ if __name__ == "__main__":
                     print(f"     Quality: {result['quality_score']:.1f}/100")
                 print()
         else:
-            print(f"❌ No results found for '{args.query}'")
-            print("💡 Try a different search term or check spelling")
+            print(f"No results found for '{args.query}'")
+            print("Try a different search term or check spelling")

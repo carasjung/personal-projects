@@ -14,19 +14,14 @@ class AudioFeatureExtractor:
     def extract_features(self, audio_path):
         """Extract all audio features needed by your ML models"""
         try:
-            # Load audio file
             y, sr = librosa.load(audio_path, sr=self.sample_rate)
-            
-            # Extract features
+
             features = {}
             
-            # Basic features
             features.update(self._extract_basic_features(y, sr))
             
-            # Spotify-like features
             features.update(self._extract_spotify_features(y, sr))
             
-            # Additional quality metrics
             features.update(self._extract_quality_features(y, sr))
             
             return features
@@ -38,7 +33,6 @@ class AudioFeatureExtractor:
         """Extract basic audio characteristics"""
         features = {}
         
-        # Duration
         features['duration'] = len(y) / sr
         
         # RMS (loudness proxy)
@@ -169,7 +163,7 @@ class AudioFeatureExtractor:
         
         return features
 
-# Example usage and testing
+# Example use and testing
 def test_audio_processor():
     """Test the audio processor with a sample file"""
     processor = AudioFeatureExtractor()

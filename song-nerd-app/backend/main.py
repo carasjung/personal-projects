@@ -166,7 +166,6 @@ async def download_audio_file(file_url: str) -> str:
             response = await client.get(file_url)
             response.raise_for_status()
             
-            # Create temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_file:
                 temp_file.write(response.content)
                 return temp_file.name
@@ -213,7 +212,7 @@ async def run_analysis(song_id: str, audio_file_path: str, metadata: dict):
     """Run the actual AI analysis on the audio file"""
     try:
         # For now, create mock analysis results
-        # TODO: Replace with your actual analysis logic when dependencies are working
+        # TODO: Replace with actual analysis logic when dependencies are working
         mock_analysis = {
             "danceability": 0.7,
             "energy": 0.8,

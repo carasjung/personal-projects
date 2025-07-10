@@ -75,8 +75,7 @@ class PlatformRecommender:
             features['energy']
         )
         
-        # Tempo-based features
-        # Estimate tempo from energy if not available
+        # Tempo-based features - estimate tempo from energy if not available
         estimated_tempo = features.get('tempo', features['energy'] * 140)
         features['tempo_tiktok_fit'] = np.where(
             (estimated_tempo >= 110) & (estimated_tempo <= 140), 1.0, 0.5
@@ -177,10 +176,10 @@ class PlatformRecommender:
         selected_features = X.columns[self.feature_selector.get_support()]
         print(f"Selected features: {selected_features.tolist()}")
         
-        # Scale features
+        # Scale 
         X_scaled = self.scaler.fit_transform(X_selected)
         
-        # Train with Random Forest (better for this type of data)
+        # Train with Random Forest 
         base_model = RandomForestRegressor(
             n_estimators=100,
             max_depth=10,  # Limit depth to prevent overfitting
@@ -412,7 +411,7 @@ def train_platform_model():
     print("="*50)
     platform_model.evaluate_model(test_df)
     
-    # Save model
+    # Save 
     platform_model.save_model('models/platform_recommender.pkl')
     print("Platform model saved!")
     

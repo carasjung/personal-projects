@@ -21,15 +21,15 @@ class SimplePreprocessingPipeline:
     
     def load_and_clean_data(self):
         """Load and perform basic cleaning"""
-        print("📊 Loading and cleaning data...")
+        print("Loading and cleaning data...")
         
         if not os.path.exists(self.input_dataset):
-            print(f"❌ Input file not found: {self.input_dataset}")
+            print(f"Input file not found: {self.input_dataset}")
             return False
         
         # Load dataset
         self.df = pd.read_csv(self.input_dataset)
-        print(f"✅ Loaded {len(self.df):,} tracks")
+        print(f"Loaded {len(self.df):,} tracks")
         
         # Create clean text fields if they don't exist
         if 'track_name_clean' not in self.df.columns:
@@ -62,7 +62,7 @@ class SimplePreprocessingPipeline:
             if col in self.df.columns:
                 self.df[col] = self.df[col].fillna(False).astype(bool)
         
-        print(f"✅ Data cleaned and filled")
+        print(f"Data cleaned and filled")
         return True
     
     def create_derived_features(self):
@@ -144,11 +144,11 @@ class SimplePreprocessingPipeline:
         if 'genre_clean' in self.df.columns:
             self.df['genre_category'] = self.df['genre_clean'].apply(categorize_genre)
         
-        print(f"✅ Derived features created")
+        print(f"Derived features created")
     
     def create_master_dataset(self):
         """Create the master music dataset"""
-        print("📀 Creating master_music_data.csv...")
+        print("Creating master_music_data.csv...")
         
         # Select columns for master dataset
         master_columns = [
@@ -180,12 +180,12 @@ class SimplePreprocessingPipeline:
         master_file = os.path.join(self.output_dir, 'master_music_data.csv')
         master_df.to_csv(master_file, index=False)
         
-        print(f"✅ Master dataset created: {len(master_df):,} rows, {len(master_df.columns)} columns")
+        print(f"Master dataset created: {len(master_df):,} rows, {len(master_df.columns)} columns")
         return len(master_df)
     
     def create_platform_performance(self):
         """Create platform performance dataset"""
-        print("📊 Creating platform_performance.csv...")
+        print("Creating platform_performance.csv...")
         
         platform_data = []
         platforms = ['spotify', 'tiktok', 'youtube']
@@ -217,14 +217,14 @@ class SimplePreprocessingPipeline:
             platform_df = pd.DataFrame(platform_data)
             platform_file = os.path.join(self.output_dir, 'platform_performance.csv')
             platform_df.to_csv(platform_file, index=False)
-            print(f"✅ Platform performance dataset created: {len(platform_df):,} rows")
+            print(f"Platform performance dataset created: {len(platform_df):,} rows")
             return len(platform_df)
         
         return 0
     
     def create_demographic_preferences(self):
         """Create demographic preferences dataset"""
-        print("👥 Creating demographic_preferences.csv...")
+        print("Creating demographic_preferences.csv...")
         
         # Define demographic profiles
         demographic_profiles = {
@@ -293,14 +293,14 @@ class SimplePreprocessingPipeline:
             demo_df = pd.DataFrame(demographic_data)
             demo_file = os.path.join(self.output_dir, 'demographic_preferences.csv')
             demo_df.to_csv(demo_file, index=False)
-            print(f"✅ Demographic preferences dataset created: {len(demo_df):,} rows")
+            print(f"Demographic preferences dataset created: {len(demo_df):,} rows")
             return len(demo_df)
         
         return 0
     
     def create_trend_analysis(self):
         """Create trend analysis dataset"""
-        print("📈 Creating trend_analysis.csv...")
+        print("Creating trend_analysis.csv...")
         
         trend_data = []
         
@@ -357,14 +357,14 @@ class SimplePreprocessingPipeline:
             trend_df = pd.DataFrame(trend_data)
             trend_file = os.path.join(self.output_dir, 'trend_analysis.csv')
             trend_df.to_csv(trend_file, index=False)
-            print(f"✅ Trend analysis dataset created: {len(trend_df):,} rows")
+            print(f"Trend analysis dataset created: {len(trend_df):,} rows")
             return len(trend_df)
         
         return 0
     
     def create_summary_report(self, dataset_counts):
         """Create a summary report"""
-        print("📊 Creating summary report...")
+        print("Creating summary report...")
         
         report = {
             'processing_date': datetime.now().isoformat(),
@@ -390,7 +390,7 @@ class SimplePreprocessingPipeline:
         with open(report_file, 'w') as f:
             json.dump(report, f, indent=2, default=str)
         
-        print(f"✅ Summary report saved: preprocessing_summary.json")
+        print(f"Summary report saved: preprocessing_summary.json")
         return report
     
     def run_pipeline(self):
@@ -416,30 +416,29 @@ class SimplePreprocessingPipeline:
         # Step 4: Create summary report
         report = self.create_summary_report(dataset_counts)
         
-        print("\n✅ PREPROCESSING PIPELINE COMPLETE!")
-        print("=" * 50)
-        print(f"🎯 RESULTS:")
+        print("\nPreprocessing Pipeline Complete")
+        print(f"Results:")
         print(f"   • Total tracks processed: {len(self.df):,}")
         print(f"   • Datasets created: {len([k for k, v in dataset_counts.items() if v > 0])}/4")
         
-        print(f"\n📁 DATASETS CREATED:")
+        print(f"\nDatasets Created:")
         for dataset_name, count in dataset_counts.items():
             if count > 0:
-                status = "✅"
+                status = "Pass"
                 filename = dataset_name + '.csv'
                 print(f"   {status} {filename}: {count:,} rows")
             else:
-                print(f"   ⚠️ {dataset_name}.csv: No data generated")
+                print(f"   {dataset_name}.csv: No data generated")
         
-        print(f"\n📊 DATA QUALITY:")
+        print(f"\nData Quality:")
         summary = report['data_summary']
         print(f"   • Unique artists: {summary['unique_artists']:,}")
         print(f"   • Unique genres: {summary['unique_genres']:,}")
         print(f"   • Average popularity: {summary['avg_popularity']:.1f}/100")
         print(f"   • Average quality: {summary['avg_quality']:.1f}/100")
         
-        print(f"\n📁 Files saved to: {self.output_dir}/")
-        print(f"🚀 Ready for Advanced Analytics!")
+        print(f"\nFiles saved to: {self.output_dir}/")
+        print(f"Ready for Advanced Analytics!")
         
         return report
 
@@ -459,7 +458,7 @@ if __name__ == "__main__":
     results = pipeline.run_pipeline()
     
     if results:
-        print(f"\n🎉 SUCCESS! All datasets created successfully!")
-        print(f"📈 Your music analytics platform is ready!")
+        print(f"\nSuccess, all datasets created successfully")
+        print(f"Your music analytics platform is ready")
     else:
-        print(f"\n❌ Pipeline failed. Check the error messages above.")
+        print(f"\nPipeline failed. Check the error messages above.")

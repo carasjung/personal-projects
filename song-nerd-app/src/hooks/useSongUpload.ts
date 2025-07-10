@@ -33,11 +33,11 @@ export const useSongUpload = () => {
     });
 
     try {
-      // Step 1: Upload file to Supabase Storage
+      // Upload file to Supabase Storage
       setState(prev => ({ ...prev, step: 'Uploading file...', progress: 20 }));
       const { url: fileUrl } = await songAPI.uploadFile(file, 'songs');
 
-      // Step 2: Create song record
+      // Create song record
       setState(prev => ({ ...prev, step: 'Creating song record...', progress: 40 }));
       const songData = {
         title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
@@ -58,11 +58,11 @@ export const useSongUpload = () => {
 
       if (dbError) throw new Error(`Database error: ${dbError.message}`);
 
-      // Step 3: Trigger analysis
+      // Trigger analysis
       setState(prev => ({ ...prev, step: 'Starting AI analysis...', progress: 60 }));
       await songAPI.triggerAnalysis(songRecord.id, fileUrl, metadata);
 
-      // Step 4: Update status
+      // Update status
       setState(prev => ({ ...prev, step: 'Analysis in progress...', progress: 80 }));
       await songAPI.updateSongStatus(songRecord.id, 'processing');
 

@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { songAPI } from '@/services/api';
 
 // Debug: Check if environment variables are loaded
-console.log('🔍 Environment Debug:', {
+console.log('Environment Debug:', {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   anonKeyStart: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...'
@@ -48,14 +48,14 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
     setCurrentStep('Preparing upload...');
 
     try {
-      // Step 1: Upload file to Supabase Storage
+      // Upload file to Supabase Storage
       setCurrentStep('Uploading file...');
       setUploadProgress(20);
       
       const { url: fileUrl, path: filePath } = await songAPI.uploadFile(file, 'songs');
-      console.log('✅ File uploaded to:', fileUrl);
+      console.log('File uploaded to:', fileUrl);
 
-      // Step 2: Create song record in database
+      // Create song record in database
       setCurrentStep('Creating song record...');
       setUploadProgress(40);
 
@@ -70,7 +70,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         user_id: null,
       };
 
-      console.log('🔍 Creating song record with:', songData);
+      console.log('Creating song record with:', songData);
 
       const { data: newSongRecord, error: dbError } = await supabase
         .from('songs')
@@ -79,13 +79,13 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         .single();
 
       if (dbError) {
-        console.error('❌ Database error:', dbError);
+        console.error('Database error:', dbError);
         throw new Error(`Database error: ${dbError.message}`);
       }
 
-      console.log('✅ Song record created:', newSongRecord);
+      console.log('Song record created:', newSongRecord);
 
-      // Step 3: Trigger AI analysis via Railway backend
+      // Trigger AI analysis via Railway backend
       setCurrentStep('Starting AI analysis...');
       setUploadProgress(60);
 
@@ -96,16 +96,16 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
         file_size: newSongRecord.file_size
       };
 
-      console.log('🤖 Triggering analysis via Railway backend...');
+      console.log('Triggering analysis via Railway backend...');
       const analysisResponse = await songAPI.triggerAnalysis(
         newSongRecord.id,
         fileUrl,
         metadata
       );
 
-      console.log('✅ Analysis started:', analysisResponse);
+      console.log('Analysis started:', analysisResponse);
 
-      // Step 4: Update song status to processing
+      // Update song status to processing
       setCurrentStep('Analysis in progress...');
       setUploadProgress(80);
 
@@ -120,7 +120,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
       }, 500);
 
     } catch (err: any) {
-      console.error('💥 Error:', err);
+      console.error('Error:', err);
       setError(err.message || 'Upload failed');
       setCurrentStep('');
     } finally {
@@ -240,7 +240,7 @@ export default function SongUpload({ onUploadSuccess }: SongUploadProps) {
               <Music className="h-16 w-16 text-gray-400 mb-6" />
               {isDragActive ? (
                 <p className="text-xl font-medium text-blue-600">
-                  Drop your song here! 🎵
+                  Drop your song here! 
                 </p>
               ) : (
                 <>

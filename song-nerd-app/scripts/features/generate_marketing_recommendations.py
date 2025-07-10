@@ -947,7 +947,7 @@ class MarketingInsightsGenerator:
         plt.style.use('default')
         plt.figure(figsize=(20, 16))
         
-        # 1. Music Personas Distribution
+        # Music Personas Distribution
         if hasattr(self, 'music_personas') and self.music_personas:
             plt.subplot(2, 3, 1)
             persona_sizes = [p['size'] for p in self.music_personas.values()]
@@ -961,7 +961,7 @@ class MarketingInsightsGenerator:
                 'Music Personas Distribution', fontsize=14, fontweight='bold'
             )
         
-        # 2. Virality Score Distribution
+        # Virality Score Distribution
         if hasattr(self, 'virality_scores') and self.virality_scores is not None:
             plt.subplot(2, 3, 2)
             plt.hist(
@@ -975,7 +975,7 @@ class MarketingInsightsGenerator:
             )
             plt.grid(True, alpha=0.3)
         
-        # 3. Platform Affinity Heatmap
+        # Platform Affinity Heatmap
         if hasattr(self, 'platform_affinity') and self.platform_affinity is not None:
             plt.subplot(2, 3, 3)
             
@@ -995,7 +995,7 @@ class MarketingInsightsGenerator:
             plt.xticks(rotation=45)
             plt.yticks(rotation=0)
         
-        # 4. Success Patterns Radar Chart (simplified)
+        # Success Patterns Radar Chart (simplified)
         if hasattr(self, 'success_patterns') and self.success_patterns and \
                 'high_virality_profile' in self.success_patterns:
             profile = self.success_patterns['high_virality_profile']
@@ -1016,7 +1016,7 @@ class MarketingInsightsGenerator:
                 fontweight='bold', pad=20
             )
         
-        # 5. Cross-Platform Success Analysis
+        # Cross-Platform Success Analysis
         if hasattr(self, 'comprehensive_features') and self.comprehensive_features is not None:
             plt.subplot(2, 3, 5)
             
@@ -1055,7 +1055,7 @@ class MarketingInsightsGenerator:
                         f'{height:.1f}', ha='center', va='bottom'
                     )
         
-        # 6. Demographic Alignment Scores
+        # Demographic Alignment Scores
         if hasattr(self, 'demographic_alignment') and self.demographic_alignment is not None:
             plt.subplot(2, 3, 6)
             
@@ -1102,32 +1102,24 @@ class MarketingInsightsGenerator:
         logging.info("Starting complete marketing insights analysis...")
         
         try:
-            # Load cross-platform data
             self.load_cross_platform_data()
             
-            # Create music personas
             self.create_music_personas()
             
-            # Analyze success patterns
             self.analyze_success_patterns()
             
-            # Generate marketing recommendations
             self.generate_marketing_recommendations()
             
-            # Create prediction model
             self.create_success_prediction_model()
             
-            # Generate comprehensive report
             self.generate_comprehensive_report()
-             
-            # Create visualization dashboard
+
             self.create_visualization_dashboard()
             
             logging.info(
                 "Complete marketing insights analysis finished successfully!"
             )
             
-            # Return summary of results
             return {
                 'personas_created': len(self.music_personas) 
                 if hasattr(self, 'music_personas') and self.music_personas 
@@ -1156,7 +1148,6 @@ class MarketingInsightsGenerator:
         if not hasattr(self, 'prediction_model') or self.prediction_model is None:
             return None
         
-        # Generate personalized recommendations
         recommendations = self.generate_marketing_recommendations(
             track_features=track_features,
             artist_name=artist_name,
@@ -1171,7 +1162,6 @@ class MarketingInsightsGenerator:
         
         exports = {}
         
-        # Export music personas
         if hasattr(self, 'music_personas') and self.music_personas:
             personas_data = []
             for persona_name, profile in self.music_personas.items():
@@ -1183,7 +1173,6 @@ class MarketingInsightsGenerator:
                     'avg_virality': profile['avg_virality']
                 }
                 
-                # Add audio profile features
                 for feature, stats in profile['audio_profile'].items():
                     row[f'{feature}_mean'] = stats['mean']
                     row[f'{feature}_std'] = stats['std']
@@ -1283,7 +1272,7 @@ if __name__ == "__main__":
         if args.command == 'analyze':
             results = insights_generator.run_complete_analysis()
             
-            print("--- Marketing Insights Analysis Complete! ---")
+            print("*** Marketing Insights Analysis Complete! ***")
             print(f"Results: {results}")
 
             exports = insights_generator.export_marketing_data(format='csv')
@@ -1307,7 +1296,7 @@ if __name__ == "__main__":
             )
             
             if prediction:
-                print("\n--- Personalized Marketing Recommendations ---")
+                print("\n*** Personalized Marketing Recommendations ***")
                 track_info = prediction.get('track_info', {})
                 print(f"  Artist: {track_info.get('artist')}")
                 print(f"  Track: {track_info.get('track')}")
@@ -1319,7 +1308,7 @@ if __name__ == "__main__":
                 print("\n  Marketing Focus:")
                 for focus in prediction.get('marketing_focus', []):
                     print(f"    - {focus}")
-                print("\n-------------------------------------------")
+                print("\n*** End of Personalized Marketing Recommendations ***")
 
     except Exception as e:
         print(f"\nAn error occurred: {e}")

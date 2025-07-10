@@ -1,3 +1,10 @@
+# marketing_insights_features.py
+
+# This script is used to generate marketing insights for a given song.
+# It uses the audio features of the song to generate insights on the song's target demographic,
+# platform recommendations, and marketing suggestions.
+# It also uses the audio features of the song to generate insights on the song's trend alignment.
+# similar artists, viral potential and overall trend alignment.
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -21,7 +28,6 @@ class MarketingInsightsGenerator:
         """Load all necessary datasets"""
         print("Loading datasets...")
         
-        # Load main music datasets
         try:
             self.spotify_tracks_df = pd.read_csv(
                 os.path.join(self.data_path, 'spotify_tracks_clean.csv')
@@ -616,7 +622,7 @@ class MarketingInsightsGenerator:
             
         return results
 
-# Example usage
+# Example use
 if __name__ == "__main__":
     # Initialize the generator (pointing to cleaned_music folder)
     generator = MarketingInsightsGenerator('cleaned_music')
@@ -723,6 +729,7 @@ if __name__ == "__main__":
                     print(f"  {song['track_name']} by {song['artists']} - {song['overall_trend_score']}%")
         
         # Generate business recommendations
+        # This is for initial testing 
         print(f"\n" + "="*50)
         print("BUSINESS RECOMMENDATIONS")
         print("="*50)

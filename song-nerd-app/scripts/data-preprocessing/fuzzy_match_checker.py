@@ -102,7 +102,7 @@ class FuzzyMatcher:
         self.top_n = top_n
         
     def create_search_key(self, artist: str, track: str, separator: str = " - ") -> str:
-        """Create a search key from artist and track, handling missing values."""
+        """Create search key from artist and track, handling missing values."""
         artist = str(artist).strip() if pd.notna(artist) else ""
         track = str(track).strip() if pd.notna(track) else ""
         
@@ -164,7 +164,6 @@ class FuzzyMatcher:
         start_time = time.time()
         logger.info(f"Starting fuzzy matching: {df1_name} vs {df2_name}")
         
-        # Preprocess datasets
         df1_clean = self.preprocess_dataframe(df1, df1_name)
         df2_clean = self.preprocess_dataframe(df2, df2_name)
         
@@ -181,7 +180,6 @@ class FuzzyMatcher:
         all_matches = []
         
         if use_parallel and len(df1_clean) > chunk_size:
-            # Parallel processing for large datasets
             num_cores = min(mp.cpu_count() - 1, 4)  # Leave one core free, max 4
             logger.info(f"Using parallel processing with {num_cores} cores")
             
@@ -205,11 +203,11 @@ class FuzzyMatcher:
             chunk_matches = process_chunk_worker(df1_clean, df2_deduped, 0, self.min_score, self.top_n)
             all_matches.extend(chunk_matches)
         
-        # Convert to DataFrame
+        # Convert to DF
         if all_matches:
             result_df = pd.DataFrame(all_matches)
             
-            # Sort by score (descending) and remove duplicates if needed
+            # Sort by descending score and remove duplicates
             result_df = result_df.sort_values(['df1_index', 'weighted_score'], 
                                             ascending=[True, False])
             
@@ -321,7 +319,7 @@ def main():
             output_file = "data/cleaned_normalized/fuzzy_matches_spotifyds_vs_spotifyyt.csv"
             matches.to_csv(output_file, index=False)
             
-            # Generate report
+            # Create report
             stats = matcher.generate_match_report(matches)
             
             # Find reciprocal matches

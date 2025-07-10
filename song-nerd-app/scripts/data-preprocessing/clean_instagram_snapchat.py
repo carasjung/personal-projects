@@ -5,7 +5,6 @@ import logging
 import chardet
 from datetime import datetime, timedelta
 
-# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 PLATFORM_COLUMNS = ['platform', 'trend_type', 'genre', 'trend_description', 'start_date', 'end_date']
@@ -64,7 +63,6 @@ def load_data(path: str) -> pd.DataFrame:
     if not Path(path).exists():
         raise FileNotFoundError(f"File not found: {path}")
     
-    # Try different encodings
     detected_encoding = detect_encoding(path)
     encodings_to_try = []
     
@@ -93,7 +91,6 @@ def clean_platform_names(df: pd.DataFrame) -> pd.DataFrame:
         logging.warning("'platform' column not found")
         return df
     
-    # Clean and standardize
     df['platform'] = (df['platform']
                      .astype(str)
                      .str.lower()
@@ -130,7 +127,6 @@ def clean_genre_classifications(df: pd.DataFrame) -> pd.DataFrame:
                    .str.replace(r'[^\w\s]', ' ', regex=True)
                    .str.replace(r'\s+', ' ', regex=True))
     
-    # Apply mappings
     df['genre'] = df['genre'].replace(GENRE_MAPPINGS)
     
     # Handle missing/invalid genres
@@ -349,7 +345,7 @@ def clean_instagram_snapchat():
         output_dir.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False, encoding='utf-8')
         
-        # Generate comprehensive report
+        # Generate report
         with open(report_path, "w", encoding='utf-8') as f:
             f.write("Instagram/Snapchat Trends Cleaning Report\n")
             f.write("=" * 50 + "\n\n")

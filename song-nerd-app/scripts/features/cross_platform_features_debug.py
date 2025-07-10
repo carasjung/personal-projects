@@ -1,8 +1,10 @@
+# cross_platform_features_debug.py
+# Debugging cross-platform features
+
 import pandas as pd
 import logging
 from pathlib import Path
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def check_cross_platform_data():
@@ -10,7 +12,6 @@ def check_cross_platform_data():
     
     data_dir = Path("data/cross_platform_features")
     
-    # Check what files exist
     print("Available files in cross_platform_features:")
     if data_dir.exists():
         for file in data_dir.glob("*.csv"):
@@ -44,18 +45,16 @@ def check_cross_platform_data():
                     print(f"  Duplicates: {duplicates}")
                 
                 # Show first few rows
-                print(f"  First 3 rows preview:")
+                print(f"First 3 rows preview:")
                 print(df.head(3).to_string())
                 
             except Exception as e:
-                print(f"  ERROR loading {filename}: {e}")
+                print(f"Error loading {filename}: {e}")
         else:
-            print(f"\n{filename}: FILE NOT FOUND")
+            print(f"\n{filename}: File not found")
 
 def check_for_virality_score():
     """Specifically check for virality score availability"""
-    
-    # Check comprehensive features file
     comp_file = Path("data/cross_platform_features/comprehensive_cross_platform_features.csv")
     if comp_file.exists():
         df = pd.read_csv(comp_file)
@@ -77,7 +76,7 @@ def check_for_virality_score():
         popularity_cols = [col for col in df.columns if 'popular' in col.lower()]
         print(f"Available popularity columns: {popularity_cols}")
     
-    # Also check virality scores file
+    # Check virality scores file
     viral_file = Path("data/cross_platform_features/virality_scores.csv")
     if viral_file.exists():
         df_viral = pd.read_csv(viral_file)

@@ -7,7 +7,6 @@ import psutil
 import gc
 import logging
 
-# Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -579,8 +578,7 @@ class HybridMarketingInsightsGenerator:
     
     def _find_similar_songs(self, song_features, insights, top_k):
         """Find similar songs from precomputed data"""
-        # This is a simplified version - in practice, you'd want to calculate
-        # actual similarity using audio features
+        # This is a simplified version - in practice, we'd want to calculate actual similarity using audio features
         demographic_scores = insights['demographic_scores']
         
         # For now, return top songs from the best matching demographic
@@ -709,7 +707,7 @@ if __name__ == "__main__":
         
         recommendations = generator.get_song_recommendations(example_song)
         if recommendations:
-            print("\n=== SONG RECOMMENDATIONS ===")
+            print("\nSong recommendations")
             print("Demographics:", recommendations['song_insights']['demographic_scores'])
             print("Platforms:", recommendations['song_insights']['platform_scores'])
             print("Recommendations:")
@@ -726,7 +724,7 @@ if __name__ == "__main__":
         }
         recommendations = generator.get_song_recommendations(test_song)
         if recommendations:
-            print("\n=== TEST SAMPLE SONG RECOMMENDATIONS ===")
+            print("\nTest sample song recommendations")
             print("Demographics:", recommendations['song_insights']['demographic_scores'])
             print("Platforms:", recommendations['song_insights']['platform_scores'])
             print("Recommendations:")

@@ -62,10 +62,10 @@ class MusicMarketingAnalyzer:
             audio_features['genre_clean'] = 'pop'  # Default genre
         
         try:
-            # Get demographics predictions (the model handles feature preparation internally)
+            # Get demographics predictions 
             demographics = self.demographics_model.predict(audio_features)
             
-            # Get platform recommendations (using robust model)
+            # Get platform recommendations
             platforms = self.platform_model.predict(audio_features)
             
             # Get similar artists
@@ -506,31 +506,31 @@ def test_analyzer():
         
         print("COMPLETE MARKETING ANALYSIS RESULTS")
         print("=" * 50)
-        print(f"📊 {results['analysis_summary']['headline']}")
-        print(f"🎯 {results['analysis_summary']['key_insight']}")
-        print(f"🎵 {results['analysis_summary']['competitive_positioning']}")
+        print(f" {results['analysis_summary']['headline']}")
+        print(f" {results['analysis_summary']['key_insight']}")
+        print(f" {results['analysis_summary']['competitive_positioning']}")
         
-        print(f"\n🎪 Platform Strategy:")
+        print(f"\n Platform Strategy:")
         for platform in results['marketing_insights']['platform_strategy']['platform_breakdown']:
             print(f"  • {platform['platform'].title()}: {platform['score']} "
                   f"(Success: {platform['success_probability']}, {platform['confidence']})")
         
-        print(f"\n📋 Top Action Items:")
+        print(f"\n Top Action Items:")
         for i, action in enumerate(results['marketing_insights']['action_items'][:4], 1):
             print(f"  {i}. {action}")
         
-        print(f"\n📈 Confidence Scores:")
+        print(f"\n Confidence Scores:")
         print(f"  • Demographics: {results['confidence_scores']['demographics']['age']:.1%}")
         print(f"  • Platform Score: {results['confidence_scores']['platforms']:.1%}")
         print(f"  • Success Probability: {results['confidence_scores']['platform_success']:.1%}")
         print(f"  • Similar Artists: {results['confidence_scores']['similar_artists']:.1%}")
         
-        print(f"\n🎭 Sound Profile: {results['marketing_insights']['positioning']['sound_profile']}")
-        print(f"🏆 Competitive Advantage: {results['marketing_insights']['positioning']['competitive_advantage']}")
+        print(f"\n Sound Profile: {results['marketing_insights']['positioning']['sound_profile']}")
+        print(f" Competitive Advantage: {results['marketing_insights']['positioning']['competitive_advantage']}")
         
         return results
     else:
-        print("❌ Models not loaded properly. Please run complete training pipeline first:")
+        print(" Models not loaded properly. Please run complete training pipeline first:")
         print("   python3 complete_training_pipeline.py")
         return None
 

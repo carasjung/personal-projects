@@ -1,3 +1,11 @@
+# quick_search_test.py
+# This script is used to test the quick search functionality of the master dataset.
+# It uses the fuzzy matching algorithm to match the songs from the different sources.
+# It also uses the audio features of the song to generate insights on the song's target demographic,
+# platform recommendations, and marketing suggestions.
+# It also uses the audio features of the song to generate insights on the song's trend alignment, 
+# similar artists, viral potential and overall trend alignment.
+
 import pandas as pd
 import numpy as np
 from fuzzywuzzy import fuzz
@@ -26,29 +34,29 @@ def search_deduplicated_dataset(query, limit=10):
     
     if os.path.exists(deduplicated_path):
         dataset_path = deduplicated_path
-        print(f"✅ Using deduplicated dataset: {dataset_path}")
+        print(f"Using deduplicated dataset: {dataset_path}")
     elif os.path.exists(fixed_path):
         dataset_path = fixed_path
-        print(f"⚠️  Deduplicated dataset not found, using fixed: {dataset_path}")
+        print(f"Deduplicated dataset not found, using fixed: {dataset_path}")
     else:
-        print("❌ No dataset found!")
+        print("No dataset found!")
         return []
     
     # Load dataset
-    print(f"📊 Loading dataset...")
+    print(f"Loading dataset...")
     df = pd.read_csv(dataset_path)
-    print(f"📈 Dataset size: {len(df):,} tracks")
+    print(f"Dataset size: {len(df):,} tracks")
     
     # Check for duplicates in the dataset
     exact_dupes = df.groupby(['track_name', 'artist_name']).size()
     duplicate_count = (exact_dupes > 1).sum()
-    print(f"🔍 Exact duplicates still in dataset: {duplicate_count}")
+    print(f"Exact duplicates still in dataset: {duplicate_count}")
     
     # Perform search
     query_clean = clean_text_for_matching(query)
     results = []
     
-    print(f"🔍 Searching for: '{query}'")
+    print(f"Searching for: '{query}'")
     
     for idx, row in df.iterrows():
         max_similarity = 0
@@ -86,13 +94,12 @@ def search_deduplicated_dataset(query, limit=10):
 def analyze_dataset_quality(dataset_path):
     """Analyze the quality of the dataset"""
     if not os.path.exists(dataset_path):
-        print(f"❌ Dataset not found: {dataset_path}")
+        print(f"Dataset not found: {dataset_path}")
         return
     
     df = pd.read_csv(dataset_path)
     
-    print(f"\n📊 DATASET ANALYSIS: {os.path.basename(dataset_path)}")
-    print("=" * 60)
+    print(f"\nDataset Analysis: {os.path.basename(dataset_path)}")
     print(f"Total tracks: {len(df):,}")
     
     # Check for exact duplicates
@@ -135,7 +142,7 @@ if __name__ == "__main__":
     
     if query.lower() == 'analyze':
         # Analyze both datasets
-        print("🔍 ANALYZING DATASETS")
+        print("Analyzing Datasets")
         analyze_dataset_quality('integration_cache/master_music_dataset_fixed.csv')
         analyze_dataset_quality('integration_cache/master_music_dataset_deduplicated.csv')
     else:
@@ -143,8 +150,7 @@ if __name__ == "__main__":
         results = search_deduplicated_dataset(query, limit=10)
         
         if results:
-            print(f"\n🎵 SEARCH RESULTS ({len(results)} found)")
-            print("=" * 60)
+            print(f"\nSearch Results ({len(results)} found)")
             
             for i, result in enumerate(results, 1):
                 platforms = []
@@ -162,4 +168,4 @@ if __name__ == "__main__":
                     print(f"     Quality: {result['quality_score']:.1f}/100")
                 print()
         else:
-            print(f"❌ No results found for '{query}'")
+            print(f"No results found for '{query}'")

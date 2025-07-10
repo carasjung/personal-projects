@@ -469,7 +469,7 @@ class EnhancedValidationSystem:
         # Component scores
         component_scores = {}
         
-        # 1. Data Completeness Score (0-100)
+        # Data Completeness Score (0-100)
         completeness_scores = []
         critical_fields = ['track_name', 'artist_name', 'normalized_popularity'] + self.audio_features[:5]
         
@@ -480,7 +480,7 @@ class EnhancedValidationSystem:
         
         component_scores['data_completeness'] = round(np.mean(completeness_scores), 2) if completeness_scores else 0
         
-        # 2. Data Consistency Score (0-100)
+        # Data Consistency Score (0-100)
         consistency_score = 100
         
         # Check for range violations
@@ -494,7 +494,7 @@ class EnhancedValidationSystem:
         
         component_scores['data_consistency'] = round(max(0, consistency_score), 2)
         
-        # 3. Source Diversity Score (0-100)
+        # Source Diversity Score (0-100)
         if 'source_count' in self.df.columns:
             multi_source_pct = (self.df['source_count'] > 1).mean() * 100
             avg_sources = self.df['source_count'].mean()
@@ -504,7 +504,7 @@ class EnhancedValidationSystem:
         
         component_scores['source_diversity'] = round(diversity_score, 2)
         
-        # 4. Platform Coverage Score (0-100)
+        # Platform Coverage Score (0-100)
         platforms = ['spotify', 'tiktok', 'youtube']
         platform_coverage = []
         
@@ -516,7 +516,7 @@ class EnhancedValidationSystem:
         coverage_score = np.mean(platform_coverage) if platform_coverage else 0
         component_scores['platform_coverage'] = round(coverage_score, 2)
         
-        # 5. Feature Quality Score (0-100)
+        # Feature Quality Score (0-100)
         feature_quality_scores = []
         
         for feature in self.audio_features:
@@ -891,62 +891,62 @@ class EnhancedValidationSystem:
         if not self.load_dataset():
             return None
         
-        print("🔍 ENHANCED VALIDATION SUITE")
+        print("Enhanced validation suite")
         print("=" * 50)
         print(f"Dataset: {os.path.basename(self.dataset_path)}")
         print(f"Tracks: {len(self.df):,}")
         print()
         
         # Step 1: Dataset Overview
-        print("📊 Step 1: Generating dataset overview...")
+        print("Generating dataset overview...")
         self.generate_dataset_overview()
         
         # Step 2: Audio Feature Consistency
-        print("🎵 Step 2: Validating audio feature consistency...")
+        print("Validating audio feature consistency...")
         self.validate_audio_feature_consistency()
         
         # Step 3: Demographic Validation
-        print("👥 Step 3: Validating demographic mapping...")
+        print("Validating demographic mapping...")
         self.validate_demographic_mapping()
         
         # Step 4: Quality Metrics
-        print("⭐ Step 4: Generating quality metrics...")
+        print("Generating quality metrics...")
         self.generate_quality_metrics()
         
         # Step 5: Recommendations
-        print("💡 Step 5: Generating recommendations...")
+        print("Generating recommendations...")
         self.generate_recommendations()
         
         # Step 6: Save Reports
-        print("💾 Step 6: Saving validation reports...")
+        print("Saving validation reports...")
         report_files = self.save_validation_report()
         
-        print("\n✅ VALIDATION COMPLETE!")
+        print("\nValidation complete!")
         print("=" * 50)
         
         # Display summary
         quality_score = self.validation_results['quality_metrics']['overall_quality_score']
         quality_category = self.validation_results['quality_metrics']['quality_categories']['overall_category']
         
-        print(f"🏆 Overall Quality: {quality_score:.1f}/100 ({quality_category})")
+        print(f"Overall Quality: {quality_score:.1f}/100 ({quality_category})")
         
         component_scores = self.validation_results['quality_metrics']['component_scores']
-        print(f"\n📈 Component Scores:")
+        print(f"\nComponent Scores:")
         for component, score in component_scores.items():
-            status = "✅" if score >= 80 else "⚠️" if score >= 60 else "❌"
+            status = "OK" if score >= 80 else "Warning" if score >= 60 else "Error"
             print(f"  {status} {component.replace('_', ' ').title()}: {score:.1f}/100")
         
         recommendations = self.validation_results['recommendations']
         high_priority = [r for r in recommendations if r['priority'] == 'High']
         
         if high_priority:
-            print(f"\n🚨 High Priority Issues ({len(high_priority)}):")
+            print(f"\nHigh Priority Issues ({len(high_priority)}):")
             for rec in high_priority[:3]:
                 print(f"  • {rec['title']}")
         else:
-            print(f"\n✨ No high priority issues found!")
+            print(f"\nNo high priority issues found!")
         
-        print(f"\n📁 Reports saved to: {self.output_dir}")
+        print(f"\nReports saved to: {self.output_dir}")
         for desc, file_path in report_files.items():
             print(f"  • {desc}: {os.path.basename(file_path)}")
         

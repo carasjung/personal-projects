@@ -1,3 +1,10 @@
+# popularity_normalizer.py
+# This script is used to normalize the popularity scores of the songs in the master dataset.
+# It uses the audio features of the song to generate insights on the song's target demographic,
+# platform recommendations, and marketing suggestions.
+# It also uses the audio features of the song to generate insights on the song's trend alignment, 
+# similar artists, viral potential and overall trend alignment.
+
 import pandas as pd
 import numpy as np
 import os
@@ -390,20 +397,20 @@ if __name__ == "__main__":
     normalizer = PopularityNormalizer(args.input)
     
     if args.command == 'analyze':
-        print("🔍 Analyzing popularity and data quality issues...")
+        print("Analyzing popularity and data quality issues...")
         analysis = normalizer.analyze_popularity_issues()
         
-        print(f"\n📊 DATASET OVERVIEW")
+        print(f"\nDataset Overview")
         print(f"Total tracks: {analysis['total_tracks']:,}")
         
-        print(f"\n❌ MISSING DATA ISSUES")
+        print(f"\nMissing Data Issues")
         missing = analysis['missing_data']
         print(f"  No popularity: {missing['no_popularity']:,}")
         print(f"  No platform: {missing['no_platform']:,}")
         print(f"  Unknown genre: {missing['no_genre']:,}")
         print(f"  No audio features: {missing['no_audio_features']:,}")
         
-        print(f"\n📈 POPULARITY RANGES BY PLATFORM")
+        print(f"\nPopularity Ranges by Platform")
         for platform, stats in analysis['platform_stats'].items():
             if stats['total_tracks'] > 0:
                 range_info = stats['avg_popularity_range']
@@ -413,17 +420,17 @@ if __name__ == "__main__":
                 print(f"    With popularity: {stats['with_popularity']:,}")
         
     elif args.command == 'fix':
-        print("🔧 Creating fixed dataset with normalized popularity scores...")
+        print("Creating fixed dataset with normalized popularity scores...")
         fixed_path = normalizer.create_fixed_dataset(args.output)
         
-        print(f"\n✅ FIXES APPLIED")
-        print(f"  ✅ Normalized popularity scores to 0-100 scale")
-        print(f"  ✅ Fixed platform indicators")
-        print(f"  ✅ Inferred missing genres")
-        print(f"  ✅ Added data quality scores")
+        print(f"\nFixes Applied")
+        print(f"  Normalized popularity scores to 0-100 scale")
+        print(f"  Fixed platform indicators")
+        print(f"  Inferred missing genres")
+        print(f"  Added data quality scores")
         
-        print(f"\n📁 Fixed dataset saved to: {fixed_path}")
-        print(f"📄 Report saved to: {fixed_path.replace('.csv', '_report.json')}")
+        print(f"\nFixed dataset saved to: {fixed_path}")
+        print(f"Report saved to: {fixed_path.replace('.csv', '_report.json')}")
         
-        print(f"\n💡 Next step: Test search with the fixed dataset")
+        print(f"\nNext step: Test search with the fixed dataset")
         print(f"   python3 scripts/features/optimized_integration_system.py search --query \"Bad Guy\" --master-file {fixed_path}")

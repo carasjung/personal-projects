@@ -102,18 +102,18 @@ def test_file_handler():
     # Test validation
     is_valid, errors = handler.validate_file('sample_song.mp3')
     if is_valid:
-        print("✅ File validation passed")
+        print("File validation passed")
         
         # Test conversion
         try:
             converted_path, metadata = handler.convert_to_standard_format('sample_song.mp3')
-            print(f"✅ File converted: {converted_path}")
+            print(f"File converted: {converted_path}")
             print(f"   Metadata: {metadata}")
             return converted_path
         except Exception as e:
-            print(f"❌ Conversion failed: {e}")
+            print(f"Conversion failed: {e}")
     else:
-        print(f"❌ File validation failed: {errors}")
+        print(f"File validation failed: {errors}")
     
     return None
 

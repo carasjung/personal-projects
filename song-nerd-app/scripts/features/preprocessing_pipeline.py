@@ -1,3 +1,10 @@
+# preprocessing_pipeline.py
+# This script is used to preprocess the master dataset.
+# It uses the audio features of the song to generate insights on the song's target demographic,
+# platform recommendations, and marketing suggestions.
+# It also uses the audio features of the song to generate insights on the song's trend alignment, 
+# similar artists, viral potential and overall trend alignment.
+
 import pandas as pd
 import numpy as np
 import re
@@ -82,8 +89,8 @@ class MusicDataPreprocessingPipeline:
             'recommendations': []
         }
         
-        # 1. Audio Feature Range Validation
-        print("🎵 Validating audio feature ranges...")
+        # Audio Feature Range Validation
+        print("Validating audio feature ranges...")
         
         for feature in self.normalized_features:
             if feature in self.df.columns:
@@ -124,8 +131,8 @@ class MusicDataPreprocessingPipeline:
                     'status': 'PASS' if out_of_range_pct < 5 else 'FAIL'
                 }
         
-        # 2. Data Type Validation
-        print("📊 Validating data types...")
+        # Data Type Validation
+        print("Validating data types...")
         
         expected_types = {
             'track_name': 'string',
@@ -153,8 +160,8 @@ class MusicDataPreprocessingPipeline:
                 else:
                     validation['data_type_validation'][column] = 'PASS'
         
-        # 3. Consistency Checks
-        print("🔍 Running consistency checks...")
+        # Consistency Checks
+        print("Running consistency checks...")
         
         # Check for impossible combinations
         if 'normalized_popularity' in self.df.columns:
@@ -177,8 +184,8 @@ class MusicDataPreprocessingPipeline:
                 'status': 'PASS' if no_platform < len(self.df) * 0.01 else 'WARN'
             }
         
-        # 4. Outlier Detection
-        print("📈 Detecting outliers...")
+        # Outlier Detection
+        print("Detecting outliers...")
         
         numeric_features = self.normalized_features + ['tempo', 'loudness', 'normalized_popularity']
         
@@ -248,7 +255,7 @@ class MusicDataPreprocessingPipeline:
             self.df['track_name_original'] = original_tracks
             
             changed_count = (self.df['track_name_clean'] != original_tracks).sum()
-            print(f"✅ Cleaned {changed_count:,} track names")
+            print(f"Cleaned {changed_count:,} track names")
         
         # Clean artist names
         if 'artist_name' in self.df.columns:
@@ -259,7 +266,7 @@ class MusicDataPreprocessingPipeline:
             self.df['artist_name_original'] = original_artists
             
             changed_count = (self.df['artist_name_clean'] != original_artists).sum()
-            print(f"✅ Cleaned {changed_count:,} artist names")
+            print(f"Cleaned {changed_count:,} artist names")
         
         # Clean genres
         if 'genre' in self.df.columns:
@@ -273,7 +280,7 @@ class MusicDataPreprocessingPipeline:
         
         scaling_stats = {}
         
-        # 1. Clip normalized features to 0-1 range
+        # Clip normalized features to 0-1 range
         for feature in self.normalized_features:
             if feature in self.df.columns:
                 original_values = self.df[feature].copy()
@@ -288,9 +295,9 @@ class MusicDataPreprocessingPipeline:
                 }
                 
                 if clipped_count > 0:
-                    print(f"⚠️  Clipped {clipped_count:,} values for {feature}")
+                    print(f"Clipped {clipped_count:,} values for {feature}")
         
-        # 2. Normalize tempo to 0-1 scale
+        # Normalize tempo to 0-1 scale
         if 'tempo' in self.df.columns:
             original_tempo = self.df['tempo'].copy()
             
@@ -305,7 +312,7 @@ class MusicDataPreprocessingPipeline:
                 'normalized_range': f'{self.df["tempo_normalized"].min():.3f}-{self.df["tempo_normalized"].max():.3f}'
             }
         
-        # 3. Normalize loudness to 0-1 scale
+        # Normalize loudness to 0-1 scale
         if 'loudness' in self.df.columns:
             original_loudness = self.df['loudness'].copy()
             
@@ -320,7 +327,7 @@ class MusicDataPreprocessingPipeline:
                 'normalized_range': f'{self.df["loudness_normalized"].min():.3f}-{self.df["loudness_normalized"].max():.3f}'
             }
         
-        # 4. Create standardized feature set for ML
+        # Create standardized feature set for ML
         ml_features = self.normalized_features.copy()
         if 'tempo_normalized' in self.df.columns:
             ml_features.append('tempo_normalized')
@@ -340,7 +347,7 @@ class MusicDataPreprocessingPipeline:
                 self.df[f'{feature}_scaled'] = scaled_features[:, i]
         
         self.preprocessing_stats['scaling'] = scaling_stats
-        print(f"✅ Scaled {len(available_features)} audio features")
+        print(f"Scaled {len(available_features)} audio features")
     
     def encode_categorical_features(self):
         """Encode categorical features for ML models"""
@@ -348,7 +355,7 @@ class MusicDataPreprocessingPipeline:
         
         encoding_stats = {}
         
-        # 1. Genre encoding
+        # Genre encoding
         if 'genre_clean' in self.df.columns:
             # Create genre category
             def categorize_genre(genre):
@@ -374,7 +381,7 @@ class MusicDataPreprocessingPipeline:
                 'most_common_genre': self.df['genre_clean'].mode().iloc[0] if len(self.df['genre_clean'].mode()) > 0 else 'unknown'
             }
         
-        # 2. Platform encoding
+        # Platform encoding
         platform_cols = ['spotify', 'tiktok', 'youtube']
         
         if all(col in self.df.columns for col in platform_cols):
@@ -405,7 +412,7 @@ class MusicDataPreprocessingPipeline:
                 'multi_platform_percentage': round((self.df['is_multi_platform'].sum() / len(self.df)) * 100, 2)
             }
         
-        # 3. Popularity tiers
+        # Popularity tiers
         if 'normalized_popularity' in self.df.columns:
             def popularity_tier(score):
                 if pd.isna(score):
@@ -431,7 +438,7 @@ class MusicDataPreprocessingPipeline:
                 'tier_distribution': self.df['popularity_tier'].value_counts().to_dict()
             }
         
-        # 4. Quality tiers
+        # Quality tiers
         if 'data_quality_score' in self.df.columns:
             def quality_tier(score):
                 if pd.isna(score):
@@ -456,7 +463,7 @@ class MusicDataPreprocessingPipeline:
             }
         
         self.preprocessing_stats['encoding'] = encoding_stats
-        print(f"✅ Encoded categorical features")
+        print(f"Encoded categorical features")
     
     def handle_missing_values(self):
         """Advanced missing value imputation"""
@@ -464,7 +471,7 @@ class MusicDataPreprocessingPipeline:
         
         imputation_stats = {}
         
-        # 1. Audio features - use median imputation by genre
+        # Audio features - use median imputation by genre
         audio_features = self.normalized_features + ['tempo_normalized', 'loudness_normalized']
         available_audio = [f for f in audio_features if f in self.df.columns]
         
@@ -491,7 +498,7 @@ class MusicDataPreprocessingPipeline:
                     'imputation_method': 'genre_median_fallback_overall'
                 }
         
-        # 2. Popularity - use platform and genre averages
+        # Popularity - use platform and genre averages
         if 'normalized_popularity' in self.df.columns:
             missing_pop = self.df['normalized_popularity'].isna().sum()
             if missing_pop > 0:
@@ -517,7 +524,7 @@ class MusicDataPreprocessingPipeline:
                     'imputation_method': 'genre_platform_average'
                 }
         
-        # 3. Source count - fill with 1 (minimum possible)
+        # Source count - fill with 1 (minimum possible)
         if 'source_count' in self.df.columns:
             missing_sources = self.df['source_count'].isna().sum()
             if missing_sources > 0:
@@ -527,7 +534,7 @@ class MusicDataPreprocessingPipeline:
                     'imputation_method': 'constant_fill_1'
                 }
         
-        # 4. Platform booleans - fill with False
+        # Platform booleans - fill with False
         platform_cols = ['spotify', 'tiktok', 'youtube']
         for col in platform_cols:
             if col in self.df.columns:
@@ -540,7 +547,7 @@ class MusicDataPreprocessingPipeline:
                     }
         
         self.preprocessing_stats['imputation'] = imputation_stats
-        print(f"✅ Handled missing values for {len(imputation_stats)} features")
+        print(f"Handled missing values for {len(imputation_stats)} features")
     
     def create_output_datasets(self):
         """Create the final output datasets"""
@@ -548,8 +555,8 @@ class MusicDataPreprocessingPipeline:
         
         datasets_created = []
         
-        # 1. Master Music Data - Complete dataset
-        print("📀 Creating master_music_data.csv...")
+        # Master Music Data - Complete dataset
+        print("Creating master_music_data.csv...")
         
         master_columns = [
             # Identifiers
@@ -599,8 +606,8 @@ class MusicDataPreprocessingPipeline:
             'description': 'Complete standardized music dataset'
         })
         
-        # 2. Platform Performance - Cross-platform metrics
-        print("📊 Creating platform_performance.csv...")
+        # Platform Performance - Cross-platform metrics
+        print("Creating platform_performance.csv...")
         
         platform_performance = []
         
@@ -640,8 +647,8 @@ class MusicDataPreprocessingPipeline:
                 'description': 'Cross-platform performance metrics'
             })
         
-        # 3. Demographic Preferences - User behavior insights
-        print("👥 Creating demographic_preferences.csv...")
+        # Demographic Preferences - User behavior insights
+        print("Creating demographic_preferences.csv...")
         
         demographic_preferences = []
         
@@ -714,8 +721,8 @@ class MusicDataPreprocessingPipeline:
                 'description': 'Demographic preference analysis'
             })
         
-        # 4. Trend Analysis - Time-based and feature trends
-        print("📈 Creating trend_analysis.csv...")
+        # Trend Analysis - Time-based and feature trends
+        print("Creating trend_analysis.csv...")
         
         trend_data = []
         
@@ -812,8 +819,8 @@ class MusicDataPreprocessingPipeline:
         
         datasets_created = []
         
-        # 1. Master Music Data - Complete dataset
-        print("📀 Creating master_music_data.csv...")
+        # Master Music Data - Complete dataset
+        print("Creating master_music_data.csv...")
         
         master_columns = [
             # Identifiers
@@ -865,8 +872,8 @@ class MusicDataPreprocessingPipeline:
             'description': 'Complete standardized music dataset'
         })
         
-        # 2. Platform Performance - Cross-platform metrics
-        print("📊 Creating platform_performance.csv...")
+        # Platform Performance - Cross-platform metrics
+        print("Creating platform_performance.csv...")
         
         platform_performance = []
         
@@ -907,8 +914,8 @@ class MusicDataPreprocessingPipeline:
                 'description': 'Cross-platform performance metrics'
             })
         
-        # 3. Demographic Preferences - User behavior insights
-        print("👥 Creating demographic_preferences.csv...")
+        # Demographic Preferences - User behavior insights
+        print("Creating demographic_preferences.csv...")
         
         demographic_preferences = []
         

@@ -48,27 +48,23 @@ class MasterDataIntegrator:
             'instrumentalness', 'liveness', 'speechiness', 'tempo', 'loudness'
         ]
         
-        # Standardized column mappings
+        # Standardized column mappings for track, artist, popularity, and genre variations
         self.column_mappings = {
-            # Track name variations
             'track': 'track_name_clean',
             'title': 'track_name_clean', 
             'name': 'track_name_clean',
             'song': 'track_name_clean',
             
-            # Artist name variations
             'artist': 'artist_name_clean',
             'artist_name': 'artist_name_clean',
             'artists': 'artist_name_clean',
             'performer': 'artist_name_clean',
             
-            # Popularity variations
             'popularity': 'popularity_score',
             'track_pop': 'popularity_score',
             'views': 'view_count',
             'streams': 'stream_count',
             
-            # Genre variations
             'genre': 'genre_clean',
             'track_genre': 'genre_clean',
             'category': 'genre_clean'
@@ -466,16 +462,16 @@ class MasterDataIntegrator:
         if self.master_dataset is None:
             self.create_master_dataset()
         
-        # 1. Critical features: Use similar song imputation
+        # Critical features: Use similar song imputation
         self._impute_audio_features()
         
-        # 2. Platform metrics: Keep as null, add flags
+        # Platform metrics: Keep as null, add flags
         self._flag_missing_platform_metrics()
         
-        # 3. Demographics: Use genre-based defaults
+        # Demographics: Use genre-based defaults
         self._impute_demographics()
         
-        # 4. Popularity scores: Use cross-platform averaging
+        # Popularity scores: Use cross-platform averaging
         self._normalize_popularity_scores()
         
         logger.info("Missing data handling complete")
@@ -526,7 +522,7 @@ class MasterDataIntegrator:
     
     def _impute_demographics(self):
         """Use genre-based defaults for demographic information"""
-        # Genre-demographic mappings based on music industry knowledge
+        # Genre-demographic mappings
         genre_demographics = {
             'pop': {'primary_age': '18-34', 'secondary_age': '35-49'},
             'rock': {'primary_age': '25-49', 'secondary_age': '50+'},
@@ -858,10 +854,10 @@ class MasterDataIntegrator:
         logger.info(f"All integration files saved to {self.cache_dir}")
     
     def run_complete_integration(self, fuzzy_threshold=85, save_output=True):
-        """Run the complete data integration pipeline"""
+        """Run the complete data integration pipeline in 6 phases"""
         logger.info("Starting complete data integration pipeline...")
         
-        # 1. Load and standardize datasets
+        # Load and standardize datasets
         logger.info("Phase 1: Loading and standardizing datasets")
         self.load_and_standardize_datasets()
         
@@ -869,23 +865,23 @@ class MasterDataIntegrator:
             logger.error("No datasets loaded. Check your file paths.")
             return None
         
-        # 2. Perform fuzzy matching
+        # Perform fuzzy matching
         logger.info("Phase 2: Performing fuzzy matching")
         self.perform_fuzzy_matching(threshold=fuzzy_threshold)
         
-        # 3. Create master dataset
+        # Create master dataset
         logger.info("Phase 3: Creating master dataset")
         self.create_master_dataset()
         
-        # 4. Handle missing data
+        # Handle missing data
         logger.info("Phase 4: Handling missing data")
         self.handle_missing_data()
         
-        # 5. Create validation framework
+        # Create validation framework
         logger.info("Phase 5: Creating validation framework")
         self.create_validation_framework()
         
-        # 6. Save results
+        # Save results
         if save_output:
             logger.info("Phase 6: Saving results")
             self.save_master_dataset()
@@ -1084,7 +1080,7 @@ class MasterDataIntegrator:
         return recommendations
 
 
-# CLI interface and example usage
+# CLI interface and example use
 if __name__ == "__main__":
     import argparse
     import sys
@@ -1131,7 +1127,7 @@ if __name__ == "__main__":
     elif args.command == 'validate':
         print("Running validation framework...")
         
-        # Try to load existing master dataset
+        # Load existing master dataset
         master_file = os.path.join(args.cache_dir, 'master_music_dataset.csv')
         if os.path.exists(master_file):
             integrator.master_dataset = pd.read_csv(master_file)
@@ -1155,7 +1151,7 @@ if __name__ == "__main__":
             print("Please provide a search query with --query")
             sys.exit(1)
         
-        # Try to load existing master dataset
+        # Load existing master dataset
         master_file = os.path.join(args.cache_dir, 'master_music_dataset.csv')
         if os.path.exists(master_file):
             integrator.master_dataset = pd.read_csv(master_file)
@@ -1174,7 +1170,7 @@ if __name__ == "__main__":
     elif args.command == 'report':
         print("Generating integration report...")
         
-        # Try to load existing validation results
+        # Load existing validation results
         validation_file = os.path.join(args.cache_dir, 'validation_results.json')
         if os.path.exists(validation_file):
             with open(validation_file, 'r') as f:

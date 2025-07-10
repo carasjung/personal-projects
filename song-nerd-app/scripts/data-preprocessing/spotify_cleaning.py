@@ -9,7 +9,6 @@ from dataclasses import dataclass
 import json
 import re
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -51,7 +50,7 @@ class SpotifyCleaningConfig:
                 'liveness': (0.0, 1.0),
                 'valence': (0.0, 1.0),
                 'tempo': (30.0, 300.0),  # Extended range for extreme genres
-                'duration_ms': (5000, 1800000),  # 5 seconds to 30 minutes
+                'duration_ms': (5000, 1800000),  # 5 sec to 30 min
                 'popularity': (0, 100),
                 'key': (0, 11),  # Musical keys (C=0 to B=11)
                 'mode': (0, 1),  # Major=1, Minor=0
@@ -124,7 +123,7 @@ class SpotifyCleaningConfig:
 
 
 class SpotifyDataCleaner:
-    """Main class for cleaning Spotify track data."""
+    """Main class for cleaning Spotify track data"""
     
     def __init__(self, config: SpotifyCleaningConfig):
         self.config = config
@@ -136,7 +135,6 @@ class SpotifyDataCleaner:
             'feature_engineering': {}
         }
         
-        # Expected columns
         self.expected_columns = [
             'track_id', 'artists', 'album_name', 'track_name', 'popularity',
             'duration_ms', 'explicit', 'danceability', 'energy', 'key',
@@ -240,7 +238,7 @@ class SpotifyDataCleaner:
             # For track names, remove rows with missing names
             if field == 'track_name':
                 df = df.dropna(subset=[field])
-                # Check minimum length
+                # Check min length
                 short_names = (df[field].str.len() < self.config.min_track_name_length).sum()
                 if short_names > 0:
                     df = df[df[field].str.len() >= self.config.min_track_name_length]
@@ -252,7 +250,7 @@ class SpotifyDataCleaner:
                 df['artist_count'] = df[field].str.count('[,;&]') + 1
                 df['artist_count'] = df['artist_count'].fillna(1)
                 
-                # Cap excessive artist counts (likely data errors)
+                # Cap excessive artist counts, which are possible data errors
                 excessive_artists = (df['artist_count'] > self.config.max_artist_count).sum()
                 if excessive_artists > 0:
                     logger.warning(f"Found {excessive_artists} tracks with >10 artists (possible data errors)")
@@ -280,7 +278,7 @@ class SpotifyDataCleaner:
             missing_count = df[feature].isnull().sum()
             
             # Count outliers before clipping
-            if missing_count < len(df):  # Only if we have some valid data
+            if missing_count < len(df):  
                 outliers_low = (df[feature] < min_val).sum()
                 outliers_high = (df[feature] > max_val).sum()
                 total_outliers = outliers_low + outliers_high
@@ -308,7 +306,6 @@ class SpotifyDataCleaner:
     
     def clean_categorical_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """Clean categorical features like explicit flag."""
-        # Clean explicit flag
         if 'explicit' in df.columns:
             original_values = df['explicit'].value_counts()
             
@@ -485,12 +482,10 @@ class SpotifyDataCleaner:
         output_dir = Path(self.config.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Save cleaned data
         output_path = output_dir / self.config.output_filename
         df.to_csv(output_path, index=False)
         logger.info(f"Cleaned Spotify data saved to {output_path}")
         
-        # Save report
         report_path = output_dir / self.config.report_filename
         with open(report_path, 'w') as f:
             json.dump(report, f, indent=2, default=str)
@@ -503,12 +498,11 @@ class SpotifyDataCleaner:
         logger.info("Starting Spotify data cleaning pipeline")
         
         try:
-            # Load and validate data
             df = self.load_data(self.config.input_path)
             if not self.validate_data_structure(df):
                 raise ValueError("Data validation failed")
             
-            # Execute cleaning steps
+            # Start cleaning pipline
             df = self.clean_track_identifiers(df)
             df = self.clean_text_fields(df)
             df = self.validate_audio_features(df)
@@ -516,7 +510,7 @@ class SpotifyDataCleaner:
             df = self.process_genres(df)
             df = self.create_derived_features(df)
             
-            # Generate report and save
+            # Create report and save
             quality_report = self.generate_quality_report(df)
             output_path, report_path = self.save_results(df, quality_report)
             
@@ -536,7 +530,6 @@ def main():
     try:
         cleaned_data, report = cleaner.clean_pipeline()
         
-        # Print summary
         print("SPOTIFY DATA CLEANING SUMMARY")
         print(f"Total tracks processed: {report['summary']['total_tracks']:,}")
         print(f"Total features: {report['summary']['total_features']}")
@@ -575,7 +568,6 @@ def main():
         return 1
     
     return 0
-
 
 if __name__ == "__main__":
     exit(main())

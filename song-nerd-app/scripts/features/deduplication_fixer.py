@@ -368,15 +368,15 @@ if __name__ == "__main__":
     fixer = DuplicationFixer(args.input)
     
     if args.command == 'analyze':
-        print("🔍 Analyzing duplicate patterns...")
+        print("Analyzing duplicate patterns...")
         analysis = fixer.analyze_duplicates()
         
-        print(f"\n📊 DUPLICATE ANALYSIS")
+        print(f"\nDuplicate analysis")
         print(f"Total tracks: {analysis['total_tracks']:,}")
         print(f"Single source tracks: {analysis['single_source_tracks']:,}")
         print(f"Multi-source tracks: {analysis['multi_source_tracks']:,}")
         
-        print(f"\n🔄 EXACT DUPLICATES")
+        print(f"\nExact duplicates")
         exact = analysis['exact_duplicates']
         print(f"Groups found: {exact['count']}")
         if exact['examples']:
@@ -384,7 +384,7 @@ if __name__ == "__main__":
             for combo, count in list(exact['examples'].items())[:5]:
                 print(f"  '{combo[1]}' by '{combo[0]}': {count} copies")
         
-        print(f"\n🎯 FUZZY DUPLICATES (sample)")
+        print(f"\nFuzzy duplicates (sample)")
         fuzzy = analysis['potential_duplicates']
         print(f"Groups found: {fuzzy['count']}")
         if fuzzy['examples']:
@@ -393,18 +393,18 @@ if __name__ == "__main__":
                 print(f"  {example}")
     
     elif args.command == 'deduplicate':
-        print(f"🔧 Removing duplicates (threshold: {args.threshold})...")
+        print(f"Removing duplicates (threshold: {args.threshold})...")
         results = fixer.create_deduplicated_dataset(args.output)
         
-        print(f"\n✅ DEDUPLICATION COMPLETE")
-        print(f"📈 Original: {results['original_count']:,} tracks")
-        print(f"📉 Final: {results['final_count']:,} tracks")
-        print(f"🗑️  Removed: {results['total_removed']:,} duplicates")
+        print(f"\nDeduplication complete")
+        print(f"Original: {results['original_count']:,} tracks")
+        print(f"Final: {results['final_count']:,} tracks")
+        print(f"Removed: {results['total_removed']:,} duplicates")
         print(f"   - Exact duplicates: {results['exact_removed']:,}")
         print(f"   - Fuzzy duplicates: {results['fuzzy_removed']:,}")
         
         reduction_pct = (results['total_removed'] / results['original_count']) * 100
-        print(f"📊 Reduction: {reduction_pct:.1f}%")
+        print(f"Reduction: {reduction_pct:.1f}%")
         
-        print(f"\n📁 Deduplicated dataset: {results['output_path']}")
-        print(f"💡 Test search: python3 scripts/features/optimized_integration_system.py search --query \"Bad Guy\" --cache-dir integration_cache")
+        print(f"\nDeduplicated dataset: {results['output_path']}")
+        print(f"Test search: python3 scripts/features/optimized_integration_system.py search --query \"Bad Guy\" --cache-dir integration_cache")

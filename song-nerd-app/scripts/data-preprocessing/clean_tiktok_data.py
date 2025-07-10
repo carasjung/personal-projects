@@ -3,7 +3,6 @@ import numpy as np
 from pathlib import Path
 import logging
 
-# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 AUDIO_FEATURES = ['danceability', 'energy', 'loudness', 'mode', 'key',
@@ -159,11 +158,9 @@ def quality_check(df: pd.DataFrame) -> dict:
 def clean_tiktok_combined():
     """Main cleaning function with comprehensive reporting."""
     try:
-        # Load data
         df_2021 = load_and_label("data/raw/market/tiktok_songs_2021.csv", "2021")
         df_2022 = load_and_label("data/raw/market/tiktok_songs_2022.csv", "2022")
         
-        # Combine datasets
         combined = pd.concat([df_2021, df_2022], ignore_index=True)
         logging.info(f"Combined datasets: {len(combined)} total records")
         

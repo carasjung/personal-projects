@@ -54,13 +54,11 @@ class AudioFeatureClusteringEngine:
         self.cache_dir = cache_dir
         self.memory_mode = memory_mode
         
-        # Audio features for clustering
         self.audio_features = [
             'danceability', 'energy', 'valence', 'acousticness', 
             'instrumentalness', 'liveness', 'speechiness', 'tempo', 'loudness'
         ]
         
-        # Scalers
         self.scaler = StandardScaler()
         self.min_max_scaler = MinMaxScaler()
         
@@ -132,7 +130,7 @@ class AudioFeatureClusteringEngine:
                 self.feature_matrix[['loudness']]
             ).astype(np.float64)
         
-        # Ensure feature matrix is float64 for sklearn compatibility (after all normalization)
+        # Set feature matrix to float64 for sklearn compatibility (post normalization)
         self.feature_matrix = self.feature_matrix.astype(np.float64)
         
         # Standardize all features
@@ -221,7 +219,7 @@ class AudioFeatureClusteringEngine:
         
         logger.info(f"Performing clustering with {n_clusters} clusters...")
         
-        # Choose clustering algorithm based on data size
+        # Choose clustering algo based on data size
         max_samples = len(self.feature_matrix_scaled)
         
         if max_samples > 10000:
@@ -246,7 +244,7 @@ class AudioFeatureClusteringEngine:
         
         logger.info(f"Clustering complete. Silhouette score: {self._calculate_silhouette_score():.3f}")
         
-        # Cache the clustering results
+        # Cache clustering results
         self._cache_clustering_results()
         
         return self.cluster_labels
@@ -318,7 +316,7 @@ class AudioFeatureClusteringEngine:
             
             # Find songs closest to center
             distances = np.linalg.norm(cluster_scaled - cluster_center, axis=1)
-            closest_indices = np.argsort(distances)[:5]  # Top 5 representative songs
+            closest_indices = np.argsort(distances)[:5]  # Top 5 songs
             
             for idx in closest_indices:
                 song_idx = cluster_data.iloc[idx]
@@ -520,7 +518,6 @@ class AudioFeatureClusteringEngine:
                 if feature in top_quartile.columns:
                     platform_audio_profile[feature] = round(top_quartile[feature].mean(), 3)
             
-            # Find the best matching cluster for this platform
             best_cluster = None
             best_score = 0
             
@@ -559,7 +556,7 @@ class AudioFeatureClusteringEngine:
     def predict_song_cluster(self, song_features):
         """Predict which cluster a new song belongs to"""
         if self.kmeans_model is None:
-            # Try to load cached model
+            # Load cached model
             cache_file = os.path.join(self.cache_dir, 'clustering_model.pkl')
             if os.path.exists(cache_file):
                 with open(cache_file, 'rb') as f:
@@ -578,7 +575,7 @@ class AudioFeatureClusteringEngine:
             # Apply same normalization as training data
             if feature == 'tempo':
                 # Normalize tempo to 0-1 scale
-                value = (value - 60) / (200 - 60)  # Assuming tempo range 60-200 BPM
+                value = (value - 60) / (200 - 60)  # Tempo range 60-200 BPM
                 value = np.clip(value, 0, 1)
             elif feature == 'loudness':
                 # Normalize loudness (typically -60 to 0 dB)
@@ -667,7 +664,7 @@ class AudioFeatureClusteringEngine:
             variation = np.std(values)
             feature_variations[feature] = variation
         
-        # Sort by variation (descending)
+        # Sort by descending variation 
         sorted_features = sorted(feature_variations.items(), key=lambda x: x[1], reverse=True)
         
         return sorted_features[:5]  # Top 5 most diverse features
@@ -726,26 +723,26 @@ class AudioFeatureClusteringEngine:
         logger.info(f"All clustering results saved to {output_dir}")
     
     def run_complete_clustering_analysis(self, n_clusters=None):
-        """Run the complete clustering analysis pipeline"""
+        """Run complete clustering analysis pipeline"""
         logger.info("Starting complete clustering analysis...")
         
-        # 1. Prepare data
+        # Prepare data
         if not self.prepare_clustering_data():
             return None
         
-        # 2. Perform clustering
+        # Perform clustering
         self.perform_clustering(n_clusters)
         
-        # 3. Create sound profiles
+        # Create sound profiles
         self.create_sound_profiles()
         
-        # 4. Analyze demographics
+        # Analyze demographics
         self.analyze_demographic_clusters()
         
-        # 5. Analyze platform preferences
+        # Analyze platform preferences
         self.analyze_platform_preferences()
         
-        # 6. Save results
+        # Save results
         self.save_all_results()
         
         logger.info("Complete clustering analysis finished!")
@@ -780,7 +777,6 @@ class AudioFeatureClusteringEngine:
 
 class ClusteringVisualizer:
     """Visualization utilities for clustering results"""
-    
     def __init__(self, clustering_engine):
         self.engine = clustering_engine
     
@@ -790,11 +786,11 @@ class ClusteringVisualizer:
             logger.error("No clustering data available")
             return None
         
-        # Perform PCA for 2D visualization
+        # PCA for 2D visualization
         pca = PCA(n_components=2, random_state=42)
         pca_features = pca.fit_transform(self.engine.feature_matrix_scaled)
         
-        # Create DataFrame for plotting
+        # Create DF for plotting
         viz_df = pd.DataFrame({
             'PC1': pca_features[:, 0],
             'PC2': pca_features[:, 1],
@@ -850,7 +846,7 @@ class ClusteringVisualizer:
                 row.append(value)
             heatmap_data.append(row)
         
-        # Create heatmap
+        # Heatmap
         fig = go.Figure(data=go.Heatmap(
             z=heatmap_data,
             x=features,
@@ -1023,19 +1019,19 @@ class IntegratedMusicAnalytics:
         """Run both marketing insights and clustering analysis"""
         logger.info("Running complete integrated analysis...")
         
-        # 1. Run marketing insights analysis
+        # Run marketing insights analysis
         logger.info("Phase 1: Marketing Insights Analysis")
         marketing_results = self.marketing_engine.run_production_analysis()
         
-        # 2. Run clustering analysis
+        # Run clustering analysis
         logger.info("Phase 2: Clustering Analysis")
         clustering_results = self.clustering_engine.run_complete_clustering_analysis()
         
-        # 3. Create integrated insights
+        # Create integrated insights
         logger.info("Phase 3: Creating Integrated Insights")
         integrated_insights = self._create_integrated_insights(marketing_results, clustering_results)
         
-        # 4. Save comprehensive results
+        # Save comprehensive results
         self._save_integrated_results(integrated_insights)
         
         return integrated_insights
@@ -1174,7 +1170,6 @@ class IntegratedMusicAnalytics:
 
 # CLI interface
 if __name__ == "__main__":
-    # Parse command-line arguments
     parser = argparse.ArgumentParser(
         description='Audio Feature Clustering Analysis'
     )
@@ -1202,7 +1197,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Execute command based on parsed arguments
     if args.command == 'analyze':
         clustering_engine = AudioFeatureClusteringEngine(
             data_path=args.data_dir, cache_dir=args.cache_dir

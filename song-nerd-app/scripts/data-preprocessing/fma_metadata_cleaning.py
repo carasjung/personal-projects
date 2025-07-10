@@ -6,16 +6,13 @@ import logging
 from pathlib import Path
 import re
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO, 
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 def clean_music_metadata():
-    """
-    Clean and standardize music metadata with comprehensive data validation
-    """
+    """Clean and standardize music metadata with comprehensive data validation"""
     input_path = "data/raw/music/million-spotify-lastfm/music_info.csv"
     output_dir = Path("data/cleaned_music")
     output_path = output_dir / "music_info_clean.csv"
@@ -51,7 +48,6 @@ def clean_music_metadata():
         df.to_csv(output_path, index=False)
         logging.info(f"Cleaned metadata saved to {output_path}")
         
-        # Generate summary report
         generate_summary_report(df, output_dir)
         
         return df
@@ -97,7 +93,7 @@ def clean_basic_metadata(df):
     if 'year' in df.columns:
         df['year'] = pd.to_numeric(df['year'], errors='coerce')
         
-        # Set reasonable year bounds (assuming music from 1900-2025)
+        # Set year bounds from 1900-2025
         df.loc[(df['year'] < 1900) | (df['year'] > 2025), 'year'] = np.nan
         
         # Create decade feature
@@ -113,7 +109,7 @@ def clean_basic_metadata(df):
         # Remove unreasonable durations (< 10 seconds or > 30 minutes)
         df.loc[(df['duration_ms'] < 10000) | (df['duration_ms'] > 1800000), 'duration_ms'] = np.nan
         
-        # Convert to minutes for easier interpretation
+        # Convert to minutes 
         df['duration_min'] = df['duration_ms'] / 60000
         
         duration_missing = df['duration_ms'].isna().sum()
@@ -149,7 +145,7 @@ def clean_audio_features(df):
         loudness_missing = df['loudness'].isna().sum()
         logging.info(f"Cleaned loudness - {loudness_missing} invalid values")
     
-    # Clean tempo (reasonable range: 50-250 BPM)
+    # Clean tempo (range: 50-250 BPM)
     if 'tempo' in df.columns:
         df['tempo'] = pd.to_numeric(df['tempo'], errors='coerce')
         df.loc[(df['tempo'] < 50) | (df['tempo'] > 250), 'tempo'] = np.nan
@@ -284,7 +280,7 @@ def validate_data(df):
     return df
 
 def generate_summary_report(df, output_dir):
-    """Generate a data quality summary report"""
+    """Create data quality summary report"""
     report_path = output_dir / "data_quality_report.txt"
     
     with open(report_path, 'w') as f:

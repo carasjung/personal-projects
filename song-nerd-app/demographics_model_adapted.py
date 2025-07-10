@@ -18,12 +18,11 @@ class DemographicsPredictor:
         self.label_encoders = {}
         
     def prepare_features(self, df):
-        """Prepare features using your actual data structure"""
-        # Audio features from your master dataset
+        """Prepare features using actual data structure"""
+        # Audio features from master dataset
         audio_features = ['danceability', 'energy', 'valence', 'acousticness', 
                          'instrumentalness', 'liveness', 'speechiness']
         
-        # Additional features from your data
         additional_features = ['audio_appeal', 'normalized_popularity']
         
         # Genre encoding
@@ -35,7 +34,7 @@ class DemographicsPredictor:
             )
             additional_features.append('genre_encoded')
         
-        # Platform performance features (if available)
+        # Platform performance features
         platform_features = []
         for platform in ['spotify', 'tiktok', 'youtube']:
             if platform in df.columns:
@@ -182,7 +181,7 @@ class DemographicsPredictor:
     
     def save_model(self, filepath):
         """Save trained model"""
-        # Ensure the directory exists
+        # Ensure directory exists
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         model_data = {
             'age_model': self.age_model,

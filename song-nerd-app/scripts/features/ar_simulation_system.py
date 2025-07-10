@@ -1,3 +1,6 @@
+# ar_simulation_system.py
+# Simulates record label talent discovery and market analysis
+
 import pandas as pd
 import numpy as np
 from fuzzywuzzy import fuzz
@@ -10,16 +13,11 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class ARSimulationSystem:
-    """
-    A&R (Artists & Repertoire) Simulation System
-    Simulates record label talent discovery and market analysis
-    """
-    
     def __init__(self, dataset_path='integration_cache/master_music_dataset_deduplicated.csv'):
         self.dataset_path = dataset_path
         self.df = None
         
-        # A&R criteria weights (based on industry standards)
+        # General A&R criteria weights 
         self.ar_criteria = {
             'commercial_potential': 0.35,    # Popularity, platform presence
             'musical_quality': 0.25,         # Audio features, production quality
@@ -36,7 +34,7 @@ class ARSimulationSystem:
             'emotional_impact': ['valence', 'energy']
         }
         
-        # Market trend indicators (based on current music industry trends)
+        # Market trend indicators
         self.market_trends = {
             'pop': {'weight': 1.2, 'features': {'danceability': 0.7, 'energy': 0.6, 'valence': 0.6}},
             'hip hop': {'weight': 1.1, 'features': {'danceability': 0.8, 'speechiness': 0.4, 'energy': 0.7}},
@@ -48,24 +46,24 @@ class ARSimulationSystem:
     def load_dataset(self):
         """Load the master dataset"""
         if not os.path.exists(self.dataset_path):
-            print(f"❌ Dataset not found: {self.dataset_path}")
+            print(f"Dataset not found: {self.dataset_path}")
             return False
         
-        print(f"📊 Loading dataset: {os.path.basename(self.dataset_path)}")
+        print(f"Loading dataset: {os.path.basename(self.dataset_path)}")
         self.df = pd.read_csv(self.dataset_path)
-        print(f"✅ Loaded {len(self.df):,} tracks from {self.df['artist_name'].nunique():,} artists")
+        print(f"Loaded {len(self.df):,} tracks from {self.df['artist_name'].nunique():,} artists")
         return True
     
     def calculate_commercial_potential(self):
         """Calculate commercial potential score for each track"""
-        print("💰 Calculating commercial potential scores...")
+        print("Calculating commercial potential scores...")
         
         scores = []
         
         for _, track in self.df.iterrows():
             score = 0
             
-            # 1. Popularity Score (40% of commercial potential)
+            # Popularity score (40% of commercial potential)
             popularity = track.get('normalized_popularity', 0)
             if pd.notna(popularity):
                 popularity_score = min(popularity / 100, 1.0)  # Normalize to 0-1
@@ -73,7 +71,7 @@ class ARSimulationSystem:
                 popularity_score = 0
             score += popularity_score * 0.4
             
-            # 2. Platform Presence (30% of commercial potential)
+            # Platform presence (30% of commercial potential)
             platform_count = sum([
                 track.get('spotify', False),
                 track.get('tiktok', False),
@@ -82,7 +80,7 @@ class ARSimulationSystem:
             platform_score = min(platform_count / 3, 1.0)  # Normalize to 0-1
             score += platform_score * 0.3
             
-            # 3. Audio Appeal (30% of commercial potential)
+            # Audio appeal (30% of commercial potential)
             appeal_features = ['danceability', 'energy', 'valence']
             appeal_values = []
             
@@ -109,7 +107,7 @@ class ARSimulationSystem:
         for _, track in self.df.iterrows():
             score = 0
             
-            # 1. Production Quality (50% of musical quality)
+            # Production quality (50% of musical quality)
             # Based on loudness consistency and overall mix
             loudness = track.get('loudness', -60)
             if pd.notna(loudness):
@@ -125,7 +123,7 @@ class ARSimulationSystem:
             
             score += production_score * 0.5
             
-            # 2. Musical Complexity (25% of musical quality)
+            # Musical complexity (25% of musical quality)
             # Balance between simplicity and sophistication
             complexity_features = ['acousticness', 'instrumentalness', 'speechiness']
             complexity_values = []
@@ -136,7 +134,7 @@ class ARSimulationSystem:
                     complexity_values.append(value)
             
             if complexity_values:
-                # Optimal complexity is moderate (not too simple, not too complex)
+                # Optimal complexity is moderate (not too simple, but not too complex)
                 avg_complexity = np.mean(complexity_values)
                 if 0.2 <= avg_complexity <= 0.6:
                     complexity_score = 1.0
@@ -148,7 +146,7 @@ class ARSimulationSystem:
             
             score += complexity_score * 0.25
             
-            # 3. Data Quality (25% of musical quality)
+            # Data quality (25% of musical quality)
             quality = track.get('data_quality_score', 0)
             if pd.notna(quality):
                 quality_score = quality / 100
@@ -164,7 +162,7 @@ class ARSimulationSystem:
     
     def calculate_market_fit(self):
         """Calculate how well tracks fit current market trends"""
-        print("📈 Calculating market fit scores...")
+        print("Calculating market fit scores...")
         
         scores = []
         
@@ -244,7 +242,7 @@ class ARSimulationSystem:
                     distance = abs(track_value - medians[feature])
                     
                     # Convert distance to uniqueness score
-                    # Sweet spot: moderately unique (not too mainstream, not too weird)
+                    # Sweet spot: moderately unique (not too mainstream, but not too weird)
                     if 0.1 <= distance <= 0.3:
                         feature_uniqueness = 1.0  # Optimal uniqueness
                     elif 0.05 <= distance <= 0.1 or 0.3 <= distance <= 0.4:
@@ -269,19 +267,19 @@ class ARSimulationSystem:
     
     def calculate_scalability(self):
         """Calculate scalability potential"""
-        print("🚀 Calculating scalability scores...")
+        print("Calculating scalability scores...")
         
         scores = []
         
         for _, track in self.df.iterrows():
             score = 0
             
-            # 1. Multi-source presence (50% of scalability)
+            # Multi-source presence (50% of scalability)
             source_count = track.get('source_count', 1)
             source_score = min(source_count / 5, 1.0)  # Max score at 5+ sources
             score += source_score * 0.5
             
-            # 2. Multi-platform presence (40% of scalability)
+            # Multi-platform presence (40% of scalability)
             platform_count = sum([
                 track.get('spotify', False),
                 track.get('tiktok', False),
@@ -290,7 +288,7 @@ class ARSimulationSystem:
             platform_score = platform_count / 3
             score += platform_score * 0.4
             
-            # 3. Data completeness (10% of scalability)
+            # Data completeness (10% of scalability)
             completeness = track.get('data_quality_score', 0) / 100
             score += completeness * 0.1
             
@@ -382,7 +380,7 @@ class ARSimulationSystem:
     
     def analyze_market_opportunities(self):
         """Analyze market opportunities by genre and demographics"""
-        print("📊 Analyzing market opportunities...")
+        print("Analyzing market opportunities...")
         
         if 'ar_score' not in self.df.columns:
             self.calculate_overall_ar_score()
@@ -430,7 +428,7 @@ class ARSimulationSystem:
     
     def generate_ar_report(self, output_file='ar_simulation_report.json'):
         """Generate comprehensive A&R report"""
-        print("📝 Generating comprehensive A&R report...")
+        print("Generating comprehensive A&R report...")
         
         # Calculate all scores
         self.calculate_commercial_potential()
@@ -483,15 +481,15 @@ class ARSimulationSystem:
         with open(output_file, 'w') as f:
             json.dump(report, f, indent=2, default=str)
         
-        print(f"✅ A&R report saved to: {output_file}")
+        print(f"A&R report saved to: {output_file}")
         return report
     
     def run_ar_simulation(self):
-        """Run complete A&R simulation"""
+        """Run A&R simulation for testing"""
         if not self.load_dataset():
             return None
         
-        print("\n🎵 A&R SIMULATION STARTING")
+        print("\nA&R SIMULATION STARTING")
         print("=" * 50)
         print("Simulating record label talent discovery process...")
         print()
@@ -500,37 +498,37 @@ class ARSimulationSystem:
         report = self.generate_ar_report()
         
         # Display key findings
-        print("✅ A&R SIMULATION COMPLETE!")
+        print("A&R SIMULATION COMPLETE!")
         print("=" * 50)
         
         exec_summary = report['executive_summary']
-        print(f"📊 Dataset Analysis:")
+        print(f"Dataset Analysis:")
         print(f"   • Total tracks analyzed: {report['report_metadata']['dataset_size']:,}")
         print(f"   • Unique artists: {report['report_metadata']['unique_artists']:,}")
         print(f"   • Average A&R score: {exec_summary['avg_ar_score']}/100")
         print(f"   • High potential tracks: {exec_summary['high_potential_tracks']:,}")
         print(f"   • Promising artists found: {exec_summary['promising_artists_count']}")
         
-        print(f"\n🌟 TOP 5 PROMISING ARTISTS:")
+        print(f"\nTOP 5 PROMISING ARTISTS:")
         for i, artist in enumerate(report['promising_artists'][:5], 1):
             print(f"   {i}. {artist['artist_name']}")
             print(f"      A&R Score: {artist['avg_ar_score']:.1f}/100 | Category: {artist['category']}")
             print(f"      Best Track: '{artist['best_track']}' | Genre: {artist['genre_focus']}")
         
-        print(f"\n🎯 TOP 5 MARKET OPPORTUNITIES:")
+        print(f"\nTOP 5 MARKET OPPORTUNITIES:")
         opportunities = report['market_opportunities']['genre_analysis']
         for i, (genre, data) in enumerate(list(opportunities.items())[:5], 1):
             print(f"   {i}. {genre.title()}")
             print(f"      Opportunity Score: {data['opportunity_score']:.1f}/100")
             print(f"      Avg Quality: {data['avg_ar_score']:.1f} | Saturation: {data['market_saturation']:.1f}%")
         
-        print(f"\n💎 TOP 3 TRACKS TO SIGN:")
+        print(f"\nTOP 3 TRACKS TO SIGN:")
         for i, track in enumerate(report['top_tracks'][:3], 1):
             print(f"   {i}. '{track['track_name']}' by {track['artist_name']}")
             print(f"      A&R Score: {track['ar_score']:.1f}/100 | Genre: {track['genre']}")
             print(f"      Commercial: {track['commercial_potential']:.1f} | Quality: {track['musical_quality']:.1f}")
         
-        print(f"\n📁 Full report saved to: ar_simulation_report.json")
+        print(f"\nFull report saved to: ar_simulation_report.json")
         
         return report
 
@@ -555,6 +553,6 @@ if __name__ == "__main__":
     report = ar_system.run_ar_simulation()
     
     if report:
-        print(f"\n🎯 A&R Simulation completed successfully!")
-        print(f"📊 Use this data to make informed talent acquisition decisions")
-        print(f"💡 Focus on artists in 'High Potential Emerging' category")
+        print(f"\nA&R Simulation completed successfully!")
+        print(f"Use this data to make informed talent acquisition decisions")
+        print(f"Focus on artists in 'High Potential Emerging' category")

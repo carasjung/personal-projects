@@ -1,13 +1,12 @@
 # platform_data_analysis.py
+# Analyze platform data to understand the zero-heavy distribution
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 def analyze_platform_data():
-    """Analyze the platform performance data to understand the zero-heavy distribution"""
-    
-    # Load the integrated platform training data
     try:
         platform_data = pd.read_csv('integrated_platform_training.csv')
         print(f"Platform training data shape: {platform_data.shape}")
@@ -248,16 +247,16 @@ def create_synthetic_platform_data(cleaned_data):
 def main():
     """Run complete platform data analysis and improvement"""
     
-    # Step 1: Analyze current data
+    # Analyze current data
     platform_data = analyze_platform_data()
     
-    # Step 2: Create cleaned dataset
+    # Create cleaned dataset
     cleaned_data = create_cleaned_platform_dataset(platform_data)
     
-    # Step 3: Get modeling recommendations
+    # Get modeling recommendations
     recommendations = recommend_modeling_strategy(cleaned_data)
     
-    # Step 4: Create synthetic data for better training
+    # Create synthetic data for better training
     enhanced_data = create_synthetic_platform_data(cleaned_data)
     
     print(f"\n" + "="*60)

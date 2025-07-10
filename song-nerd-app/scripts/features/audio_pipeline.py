@@ -12,7 +12,6 @@ class CompleteAudioPipeline:
         self.feature_extractor = AudioFeatureExtractor()
         self.marketing_analyzer = MusicMarketingAnalyzer()
         
-        # Load ML models
         self.marketing_analyzer.load_models()
     
     def process_uploaded_song(self, file_path, metadata=None):
@@ -27,7 +26,7 @@ class CompleteAudioPipeline:
         }
         
         try:
-            # Step 1: Validate file
+            # Validate file
             print("🔍 Validating uploaded file...")
             is_valid, validation_errors = self.file_handler.validate_file(file_path)
             
@@ -35,24 +34,24 @@ class CompleteAudioPipeline:
                 results['errors'] = validation_errors
                 return results
             
-            print("✅ File validation passed")
+            print("File validation passed")
             
-            # Step 2: Convert to standard format
-            print("🔄 Converting to standard format...")
+            # Convert to standard format
+            print("Converting to standard format...")
             processed_path, file_metadata = self.file_handler.convert_to_standard_format(file_path)
             results['file_info'] = file_metadata
             
-            print("✅ File conversion completed")
+            print("File conversion completed")
             
-            # Step 3: Extract audio features
+            # Extract audio features
             print("🎵 Extracting audio features...")
             audio_features = self.feature_extractor.process_file(processed_path, metadata)
             results['audio_features'] = audio_features
             
-            print("✅ Audio feature extraction completed")
+            print("Audio feature extraction completed")
             
-            # Step 4: Marketing analysis
-            print("📊 Performing marketing analysis...")
+            # Marketing analysis
+            print("Performing marketing analysis...")
             song_metadata = {
                 'track_name': metadata.get('track_name', 'Unknown Track'),
                 'artist_name': metadata.get('artist_name', 'Unknown Artist'),
@@ -64,9 +63,8 @@ class CompleteAudioPipeline:
             )
             results['marketing_analysis'] = marketing_analysis
             
-            print("✅ Marketing analysis completed")
+            print("Marketing analysis completed")
             
-            # Success!
             results['success'] = True
             
             # Cleanup temporary files
@@ -76,7 +74,7 @@ class CompleteAudioPipeline:
             
         except Exception as e:
             results['errors'].append(f"Processing failed: {str(e)}")
-            print(f"❌ Pipeline error: {e}")
+            print(f"Pipeline error: {e}")
             return results
     
     def get_quick_summary(self, results):
@@ -110,7 +108,7 @@ class CompleteAudioPipeline:
             'confidence_level': analysis['analysis_summary']['confidence_level']
         }
 
-# Example usage and testing
+# Example use and testing
 def test_complete_pipeline():
     """Test the complete audio processing pipeline"""
     
@@ -123,7 +121,7 @@ def test_complete_pipeline():
         'genre': 'pop'
     }
     
-    print("🎤 Testing Complete Audio Processing Pipeline")
+    print("Testing Complete Audio Processing Pipeline")
     print("=" * 60)
     
     # You'll need to provide an actual audio file for testing
@@ -133,7 +131,7 @@ def test_complete_pipeline():
         results = pipeline.process_uploaded_song(test_file, test_metadata)
         
         if results['success']:
-            print("\n🎉 PIPELINE SUCCESS!")
+            print("\nPipeline success")
             print("=" * 40)
             
             # Show quick summary
@@ -152,11 +150,11 @@ def test_complete_pipeline():
             print(f"\nDetailed results saved to: test_analysis_results.json")
             
         else:
-            print("\n❌ PIPELINE FAILED")
+            print("\nPipeline failed")
             print("Errors:", results['errors'])
     
     else:
-        print(f"❌ Test file '{test_file}' not found")
+        print(f"Test file '{test_file}' not found")
         print("Please provide a sample audio file to test the pipeline")
 
 if __name__ == "__main__":

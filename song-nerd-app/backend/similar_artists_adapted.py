@@ -1,4 +1,4 @@
-# similar_artists_adapted.py
+# similar_artists_adapted.py 
 
 import pandas as pd
 import numpy as np
@@ -14,8 +14,7 @@ class SimilarArtistFinder:
         self.pca = PCA(n_components=0.95)
         
     def build_artist_database(self, master_data):
-        """Build artist profile database from your master dataset"""
-        # Audio features available in your data
+        """Build artist profile database from master dataset"""
         audio_features = ['danceability', 'energy', 'valence', 'acousticness', 
                          'instrumentalness', 'liveness', 'speechiness']
         
@@ -230,7 +229,6 @@ class SimilarArtistFinder:
 
 # Build and save similar artists database
 def build_similar_artists_database():
-    # Load master data
     master_data = pd.read_csv('final_datasets/master_music_data.csv')
     
     # Initialize and build database

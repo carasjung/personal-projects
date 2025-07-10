@@ -1,10 +1,11 @@
+# headers.py
+# Check headers in all CSV files in the data directory
+
 import os
 import pandas as pd
 
-# Set your data directory path
 data_dir = 'final_datasets'
 
-# Loop through all CSV files in the directory
 for filename in os.listdir(data_dir):
     if filename.endswith('.csv'):
         file_path = os.path.join(data_dir, filename)

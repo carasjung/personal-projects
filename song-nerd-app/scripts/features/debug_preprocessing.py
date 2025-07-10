@@ -11,39 +11,38 @@ def debug_preprocessing_pipeline(input_file='integration_cache/master_music_data
                                 output_dir='final_datasets'):
     """Debug version of preprocessing pipeline to find issues"""
     
-    print("🔧 DEBUG PREPROCESSING PIPELINE")
-    print("=" * 50)
+    print("Debug preprocessing pipeline")
     
-    # Step 1: Check input file
-    print(f"📂 Step 1: Checking input file...")
+    # Check input file
+    print(f"Checking input file...")
     if not os.path.exists(input_file):
-        print(f"❌ ERROR: Input file not found: {input_file}")
+        print(f"Error: Input file not found: {input_file}")
         return False
     
     file_size = os.path.getsize(input_file) / (1024*1024)  # MB
-    print(f"✅ Input file found: {input_file} ({file_size:.1f} MB)")
+    print(f"Input file found: {input_file} ({file_size:.1f} MB)")
     
-    # Step 2: Load dataset
-    print(f"📊 Step 2: Loading dataset...")
+    # Load dataset
+    print(f"Loading dataset...")
     try:
         df = pd.read_csv(input_file)
-        print(f"✅ Dataset loaded: {len(df):,} rows, {len(df.columns)} columns")
+        print(f"Dataset loaded: {len(df):,} rows, {len(df.columns)} columns")
         print(f"   Columns: {list(df.columns)[:10]}..." if len(df.columns) > 10 else f"   Columns: {list(df.columns)}")
     except Exception as e:
-        print(f"❌ ERROR loading dataset: {e}")
+        print(f"Error loading dataset: {e}")
         return False
     
-    # Step 3: Check output directory
-    print(f"📁 Step 3: Checking output directory...")
+    # Check output directory
+    print(f"Checking output directory...")
     try:
         os.makedirs(output_dir, exist_ok=True)
-        print(f"✅ Output directory ready: {output_dir}")
+        print(f"Output directory ready: {output_dir}")
     except Exception as e:
-        print(f"❌ ERROR creating output directory: {e}")
+        print(f"Errorreating output directory: {e}")
         return False
     
-    # Step 4: Create simple test dataset
-    print(f"🧪 Step 4: Creating test dataset...")
+    # Create simple test dataset
+    print(f"Creating test dataset...")
     try:
         # Create a simple test dataset with just essential columns
         test_columns = []
@@ -77,17 +76,17 @@ def debug_preprocessing_pipeline(input_file='integration_cache/master_music_data
             test_df = df[test_columns].copy()
             test_file = os.path.join(output_dir, 'test_dataset.csv')
             test_df.to_csv(test_file, index=False)
-            print(f"✅ Test dataset created: {test_file} ({len(test_df):,} rows)")
+            print(f"Test dataset created: {test_file} ({len(test_df):,} rows)")
         else:
-            print(f"❌ No suitable columns found for test dataset")
+            print(f"No suitable columns found for test dataset")
             return False
             
     except Exception as e:
-        print(f"❌ ERROR creating test dataset: {e}")
+        print(f"Error creating test dataset: {e}")
         return False
     
-    # Step 5: Create minimal master dataset
-    print(f"📀 Step 5: Creating minimal master dataset...")
+    # Create minimal master dataset
+    print(f"Creating minimal master dataset...")
     try:
         # Create master dataset with available columns
         master_columns = test_columns.copy()
@@ -101,15 +100,15 @@ def debug_preprocessing_pipeline(input_file='integration_cache/master_music_data
         master_df = df[master_columns].copy()
         master_file = os.path.join(output_dir, 'master_music_data.csv')
         master_df.to_csv(master_file, index=False)
-        print(f"✅ Master dataset created: {master_file}")
+        print(f"Master dataset created: {master_file}")
         print(f"   Rows: {len(master_df):,}, Columns: {len(master_df.columns)}")
         
     except Exception as e:
-        print(f"❌ ERROR creating master dataset: {e}")
+        print(f"Error creating master dataset: {e}")
         return False
     
-    # Step 6: Create simple platform performance dataset
-    print(f"📊 Step 6: Creating platform performance dataset...")
+    # Create simple platform performance dataset
+    print(f"Creating platform performance dataset...")
     try:
         platform_data = []
         
@@ -134,17 +133,17 @@ def debug_preprocessing_pipeline(input_file='integration_cache/master_music_data
             platform_df = pd.DataFrame(platform_data)
             platform_file = os.path.join(output_dir, 'platform_performance.csv')
             platform_df.to_csv(platform_file, index=False)
-            print(f"✅ Platform performance dataset created: {platform_file}")
+            print(f"Platform performance dataset created: {platform_file}")
             print(f"   Rows: {len(platform_df):,}")
         else:
-            print(f"⚠️ No platform data found")
+            print(f"No platform data found")
             
     except Exception as e:
-        print(f"❌ ERROR creating platform dataset: {e}")
+        print(f"Error creating platform dataset: {e}")
         return False
     
-    # Step 7: List all created files
-    print(f"📁 Step 7: Listing created files...")
+    # List all created files
+    print(f"Listing created files...")
     try:
         created_files = []
         for file in os.listdir(output_dir):
@@ -154,20 +153,20 @@ def debug_preprocessing_pipeline(input_file='integration_cache/master_music_data
                 created_files.append((file, file_size))
         
         if created_files:
-            print(f"✅ Created {len(created_files)} files:")
+            print(f"Created {len(created_files)} files:")
             for filename, size in created_files:
                 print(f"   • {filename} ({size:.1f} KB)")
         else:
-            print(f"❌ No files were created")
+            print(f"No files were created")
             return False
             
     except Exception as e:
-        print(f"❌ ERROR listing files: {e}")
+        print(f"Error listing files: {e}")
         return False
     
-    print(f"\n🎉 DEBUG PREPROCESSING COMPLETE!")
-    print(f"✅ All steps completed successfully")
-    print(f"📁 Check {output_dir}/ for created files")
+    print(f"\nDebug preprocessing complete")
+    print(f"All steps completed successfully")
+    print(f"Check {output_dir}/ for created files")
     
     return True
 
@@ -187,7 +186,7 @@ if __name__ == "__main__":
     success = debug_preprocessing_pipeline(input_file, output_dir)
     
     if success:
-        print(f"\n💡 If this worked, the issue was in the complex preprocessing logic.")
-        print(f"🔧 Try running the full pipeline again, or use these simpler datasets.")
+        print(f"\nIf this worked, the issue was in the complex preprocessing logic.")
+        print(f"Try running the full pipeline again, or use these simpler datasets.")
     else:
-        print(f"\n❌ Debug pipeline failed. Check the error messages above.")
+        print(f"\nDebug pipeline failed. Check the error messages above.")

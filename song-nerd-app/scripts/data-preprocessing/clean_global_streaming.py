@@ -1,4 +1,5 @@
 # clean_global_streaming.py
+# This script cleans the global streaming data from Spotify
 
 import pandas as pd
 import numpy as np
@@ -9,7 +10,6 @@ from dataclasses import dataclass
 import json
 import re
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -20,7 +20,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class CleaningConfig:
     """Configuration for data cleaning operations."""
@@ -29,7 +28,6 @@ class CleaningConfig:
     output_filename: str = "global_streaming_clean.csv"
     report_filename: str = "global_streaming_report.json"
     
-    # Cleaning rules
     country_mappings: Dict[str, str] = None
     subscription_mappings: Dict[str, str] = None
     platform_mappings: Dict[str, str] = None
@@ -77,10 +75,8 @@ class CleaningConfig:
                 'pm': 'Afternoon'
             }
 
-
 class StreamingDataCleaner:
     """Main class for cleaning streaming data with validation and reporting."""
-    
     def __init__(self, config: CleaningConfig):
         self.config = config
         self.cleaning_stats = {
@@ -90,7 +86,6 @@ class StreamingDataCleaner:
             'warnings': []
         }
         
-        # Expected columns for this dataset
         self.expected_columns = [
             'User_ID', 'Age', 'Country', 'Streaming Platform', 'Top Genre',
             'Minutes Streamed Per Day', 'Number of Songs Liked', 'Most Played Artist',
@@ -151,13 +146,10 @@ class StreamingDataCleaner:
         
         original_count = len(df)
         
-        # Remove rows with missing User_IDs
         df = df.dropna(subset=['User_ID'])
         
-        # Convert to string and strip whitespace
         df['User_ID'] = df['User_ID'].astype(str).str.strip()
         
-        # Remove empty string User_IDs
         df = df[df['User_ID'] != '']
         
         cleaned_count = len(df)
@@ -180,10 +172,9 @@ class StreamingDataCleaner:
         
         original_values = df['Age'].value_counts()
         
-        # Convert to numeric, handling any string representations
         df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
         
-        # Remove unrealistic ages (keep ages between 13 and 100)
+        # Keep ages between 13 and 100
         age_mask = (df['Age'] >= 13) & (df['Age'] <= 100)
         invalid_ages = (~age_mask).sum()
         
@@ -210,13 +201,11 @@ class StreamingDataCleaner:
         
         original_values = df['Country'].value_counts()
         
-        # Clean and standardize
         df['Country'] = (df['Country']
                         .astype(str)
                         .str.strip()
                         .str.title())
         
-        # Apply custom mappings (case-insensitive)
         country_map_lower = {k.lower(): v for k, v in self.config.country_mappings.items()}
         df['Country'] = df['Country'].apply(
             lambda x: country_map_lower.get(x.lower(), x) if pd.notna(x) else x
@@ -238,7 +227,6 @@ class StreamingDataCleaner:
         
         original_values = df['Streaming Platform'].value_counts()
         
-        # Clean platform names
         df['Streaming Platform'] = (df['Streaming Platform']
                                    .astype(str)
                                    .str.strip()
@@ -271,7 +259,6 @@ class StreamingDataCleaner:
                           .str.replace('_', ' ', regex=False)
                           .str.replace('-', ' ', regex=False))
         
-        # Remove extra whitespace
         df['Top Genre'] = df['Top Genre'].str.replace(r'\s+', ' ', regex=True)
         
         cleaned_values = df['Top Genre'].value_counts()
@@ -304,7 +291,7 @@ class StreamingDataCleaner:
             
             # Handle outliers and invalid values
             if col == 'Minutes Streamed Per Day':
-                # Cap at realistic daily streaming (24 hours = 1440 minutes)
+                # Cap at realistic daily streaming. 24 hours = 1440 minutes
                 df[col] = df[col].clip(0, 1440)
             elif col == 'Number of Songs Liked':
                 # Remove negative values
@@ -339,7 +326,6 @@ class StreamingDataCleaner:
                                    .str.strip()
                                    .str.title())
         
-        # Remove extra whitespace
         df['Most Played Artist'] = df['Most Played Artist'].str.replace(r'\s+', ' ', regex=True)
         
         cleaned_values = df['Most Played Artist'].value_counts()
@@ -403,7 +389,7 @@ class StreamingDataCleaner:
         """Remove duplicate records and track the operation."""
         original_count = len(df)
         
-        # Remove duplicates based on User_ID if available, otherwise all columns
+        # Remove duplicates based on User_ID, otherwise all columns
         if 'User_ID' in df.columns:
             df_clean = df.drop_duplicates(subset=['User_ID'])
         else:
@@ -485,7 +471,6 @@ class StreamingDataCleaner:
         logger.info("Starting streaming data cleaning pipeline")
         
         try:
-            # Load data
             df = self.load_data(self.config.input_path)
             
             # Validate structure
@@ -507,7 +492,6 @@ class StreamingDataCleaner:
             # Generate report
             quality_report = self.generate_quality_report(df)
             
-            # Save results
             output_path, report_path = self.save_results(df, quality_report)
             
             logger.info("Data cleaning pipeline completed successfully")
@@ -526,7 +510,6 @@ def main():
     try:
         cleaned_data, report = cleaner.clean_pipeline()
         
-        # Print summary
         print("STREAMING DATA CLEANING SUMMARY")
         print(f"Records processed: {report['summary']['total_records']:,}")
         print(f"Columns: {report['summary']['total_columns']}")

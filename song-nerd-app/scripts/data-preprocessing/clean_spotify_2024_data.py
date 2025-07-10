@@ -4,7 +4,6 @@ from pathlib import Path
 import logging
 import chardet
 
-# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 NUMERIC_COLUMNS = [
@@ -71,7 +70,6 @@ def load_spotify_file(path: str) -> pd.DataFrame:
                 logging.warning(f"Error with {encoding}: {e}")
                 continue
         
-        # If all encodings fail, raise an error
         raise ValueError("Could not determine file encoding. Please check the file format.")
         
     except Exception as e:
@@ -103,7 +101,6 @@ def clean_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:
             if total_missing > 0:
                 # Use median for most columns, but handle special cases
                 if col in ['Spotify Popularity']:
-                    # For popularity scores, use a more conservative approach
                     fill_value = df[col].median()
                 else:
                     fill_value = df[col].median()
@@ -212,21 +209,16 @@ def clean_spotify_2024():
         output_path = output_dir / "spotify_2024_clean.csv"
         report_path = output_dir / "spotify_cleaning_report.txt"
         
-        # Load and clean
         logging.info("Starting Spotify 2024 data cleaning...")
         df = load_spotify_file(input_path)
         
-        # Show initial data info
         logging.info(f"Initial data shape: {df.shape}")
         logging.info(f"Columns: {list(df.columns)}")
         
-        # Clean numeric columns
         df = clean_numeric_columns(df)
         
-        # Validate data ranges
         df = validate_data_ranges(df)
         
-        # Compute engagement ratios
         df = compute_ratios(df)
 
         # Quality report
@@ -268,7 +260,7 @@ def clean_spotify_2024():
                 f.write(f"  Mean: {stats['mean']:,.0f}\n")
         
         logging.info(f"Saved cleaning report to {report_path}")
-        logging.info("Spotify 2024 data cleaning completed successfully!")
+        logging.info("Spotify 2024 data cleaning completed successfully.")
         
         return df
         

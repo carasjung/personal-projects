@@ -504,33 +504,32 @@ def test_analyzer():
     if analyzer.models_loaded:
         results = analyzer.analyze_song(sample_features, sample_metadata)
         
-        print("COMPLETE MARKETING ANALYSIS RESULTS")
-        print("=" * 50)
-        print(f"📊 {results['analysis_summary']['headline']}")
-        print(f"🎯 {results['analysis_summary']['key_insight']}")
-        print(f"🎵 {results['analysis_summary']['competitive_positioning']}")
+        print("Complete Marketing Analysis Results")
+        print(f" {results['analysis_summary']['headline']}")
+        print(f" {results['analysis_summary']['key_insight']}")
+        print(f" {results['analysis_summary']['competitive_positioning']}")
         
-        print(f"\n🎪 Platform Strategy:")
+        print(f"\nPlatform Strategy:")
         for platform in results['marketing_insights']['platform_strategy']['platform_breakdown']:
             print(f"  • {platform['platform'].title()}: {platform['score']} "
                   f"(Success: {platform['success_probability']}, {platform['confidence']})")
         
-        print(f"\n📋 Top Action Items:")
+        print(f"\nTop Action Items:")
         for i, action in enumerate(results['marketing_insights']['action_items'][:4], 1):
             print(f"  {i}. {action}")
         
-        print(f"\n📈 Confidence Scores:")
+        print(f"\nConfidence Scores:")
         print(f"  • Demographics: {results['confidence_scores']['demographics']['age']:.1%}")
         print(f"  • Platform Score: {results['confidence_scores']['platforms']:.1%}")
         print(f"  • Success Probability: {results['confidence_scores']['platform_success']:.1%}")
         print(f"  • Similar Artists: {results['confidence_scores']['similar_artists']:.1%}")
         
-        print(f"\n🎭 Sound Profile: {results['marketing_insights']['positioning']['sound_profile']}")
-        print(f"🏆 Competitive Advantage: {results['marketing_insights']['positioning']['competitive_advantage']}")
+        print(f"\nSound Profile: {results['marketing_insights']['positioning']['sound_profile']}")
+        print(f"Competitive Advantage: {results['marketing_insights']['positioning']['competitive_advantage']}")
         
         return results
     else:
-        print("❌ Models not loaded properly. Please run complete training pipeline first:")
+        print("Models not loaded properly. Please run complete training pipeline first:")
         print("   python3 complete_training_pipeline.py")
         return None
 

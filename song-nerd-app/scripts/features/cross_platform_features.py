@@ -7,7 +7,6 @@ from sklearn.cluster import KMeans
 import warnings
 warnings.filterwarnings('ignore')
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -71,7 +70,6 @@ class CrossPlatformMetrics:
         """Create unified dataset with cross-platform matches"""
         logging.info("Creating unified cross-platform dataset...")
         
-        # Start with base datasets and add platform identifiers
         datasets_with_platform = []
         
         # Process TikTok data
@@ -80,10 +78,10 @@ class CrossPlatformMetrics:
             self.datasets['tiktok_2022'].assign(platform='tiktok', year=2022)
         ], ignore_index=True)
         
-        # CRITICAL FIX: Remove duplicate columns first
+        # Remove duplicate columns
         tiktok_combined = tiktok_combined.loc[:, ~tiktok_combined.columns.duplicated()]
         
-        # Standardize column names for TikTok
+        # Standardize column names
         tiktok_combined = tiktok_combined.rename(columns={
             'track_name': 'track_clean',
             'artist_name': 'artist_clean',
@@ -93,7 +91,7 @@ class CrossPlatformMetrics:
         
         # Process Spotify DS data
         spotify_ds = self.datasets['spotify_ds'].copy()
-        # CRITICAL FIX: Remove duplicate columns
+
         spotify_ds = spotify_ds.loc[:, ~spotify_ds.columns.duplicated()]
         
         spotify_ds['platform'] = 'spotify'
@@ -105,7 +103,7 @@ class CrossPlatformMetrics:
         
         # Process Spotify YT data
         spotify_yt = self.datasets['spotify_yt'].copy()
-        # CRITICAL FIX: Remove duplicate columns
+
         spotify_yt = spotify_yt.loc[:, ~spotify_yt.columns.duplicated()]
         
         spotify_yt['platform'] = 'youtube'
@@ -114,7 +112,7 @@ class CrossPlatformMetrics:
             'artist': 'artist_clean'
         })
         
-        # Create popularity score for YouTube based on engagement
+        # Create popularity score for YT based on engagement
         if all(col in spotify_yt.columns for col in ['views', 'likes', 'comments']):
             spotify_yt['popularity_score'] = self._calculate_youtube_popularity(spotify_yt)
         
@@ -133,10 +131,9 @@ class CrossPlatformMetrics:
         datasets_processed = []
         
         for df, name in [(tiktok_combined, 'tiktok'), (spotify_ds, 'spotify'), (spotify_yt, 'youtube')]:
-            # Get available columns
             available_cols = [col for col in common_cols if col in df.columns]
             
-            # CRITICAL FIX: Ensure no duplicate columns before filtering
+            # Ensure no duplicate columns before filtering
             df_clean = df.loc[:, ~df.columns.duplicated()]
             
             # Filter to available columns
@@ -168,14 +165,14 @@ class CrossPlatformMetrics:
                 logging.error(f"Dataset {i} has non-unique index before concat!")
                 df.index = range(len(df))
             
-            # Check for duplicate columns one more time
+            # Check for duplicate columns one final time
             if df.columns.duplicated().any():
                 logging.error(f"Dataset {i} still has duplicate columns!")
                 df = df.loc[:, ~df.columns.duplicated()]
                 datasets_processed[i] = df
         
         try:
-            # Combine all datasets - now with clean unique indices and no duplicate columns
+            # Combine all datasets with clean unique indices and no duplicate columns
             self.unified_dataset = pd.concat(datasets_processed, ignore_index=True, sort=False)
             
             # Final safety check and cleanup
@@ -211,7 +208,7 @@ class CrossPlatformMetrics:
             # Try alternative approach: concatenate with explicit index handling
             logging.info("Attempting alternative concatenation method...")
         
-            # Reset all indices explicitly and create new range indices
+            # Reset all indices and create new range indices
             for i, df in enumerate(datasets_processed):
                 df.index = pd.RangeIndex(start=0, stop=len(df), step=1)
                 logging.debug(f"Dataset {i} new index: {df.index}")
@@ -393,8 +390,7 @@ class CrossPlatformMetrics:
                 
                 # Score based on how well the feature fits the range
                 if min_val <= feature_val <= max_val:
-                    # Perfect fit
-                    score = 1.0
+                    score = 1.0 # Perfect fit
                 else:
                     # Calculate distance from preferred range
                     if feature_val < min_val:
@@ -582,10 +578,8 @@ class CrossPlatformMetrics:
         logging.info("Starting complete cross-platform analysis...")
         
         try:
-            # Load data
             self.load_datasets()
             
-            # Create unified dataset
             self.create_unified_dataset()
             
             # Calculate metrics
@@ -616,7 +610,7 @@ class CrossPlatformMetrics:
             logging.error(f"Analysis failed: {str(e)}")
             raise
 
-# Usage example
+# Use example
 if __name__ == "__main__":
     analyzer = CrossPlatformMetrics(data_dir="data")
     results = analyzer.run_complete_analysis()

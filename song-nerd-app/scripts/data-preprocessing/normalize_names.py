@@ -66,11 +66,11 @@ def clean_track_name(name: str) -> str:
     # Remove content in parentheses and brackets (versions, features, etc.)
     name = re.sub(r'\s*[\(\[].*?[\)\]]', '', name)
     
-    # Remove common suffixes with various separators
+    # Remove common suffixes with separators
     suffixes_pattern = r'\s*[-–—\s]+(explicit|radio\s+edit|clean\s+version|instrumental|acoustic|live|remix|remaster|extended|original|official).*$'
     name = re.sub(suffixes_pattern, '', name)
     
-    # Remove feat. from track names as well
+    # Remove ft. from tracks
     name = re.sub(r'\s*(feat\.|ft\.|featuring)\s+.*', '', name)
     
     # Clean special characters but preserve spaces
@@ -94,7 +94,7 @@ def extract_featured_artists(artist_name: str) -> Tuple[str, List[str]]:
     if not isinstance(artist_name, str):
         return '', []
     
-    # Find featured artists
+    # Find ft artists
     featured_pattern = r'\s*(feat\.|ft\.|featuring|with|x|&|\+)\s+(.+)'
     match = re.search(featured_pattern, artist_name, re.IGNORECASE)
     
@@ -102,7 +102,7 @@ def extract_featured_artists(artist_name: str) -> Tuple[str, List[str]]:
         main_artist = artist_name[:match.start()].strip()
         featured_part = match.group(2)
         
-        # Split multiple featured artists
+        # Split multiple ft artists
         featured_artists = re.split(r'\s*[,&\+]\s*|\s+and\s+|\s+x\s+', featured_part)
         featured_artists = [clean_artist_name(artist) for artist in featured_artists if artist.strip()]
         
@@ -112,7 +112,7 @@ def extract_featured_artists(artist_name: str) -> Tuple[str, List[str]]:
 
 def fuzzy_match_score(str1: str, str2: str, algorithm: str = 'ratio') -> int:
     """
-    Calculate fuzzy matching score between two strings.
+    Calculate fuzzy matching score between 2 strings.
     
     Args:
         str1, str2: Strings to compare
@@ -154,7 +154,7 @@ def create_matching_variants(artist_name: str, track_name: str) -> List[Tuple[st
     if artist_no_common != artist_name or track_no_common != track_name:
         variants.append((artist_no_common, track_no_common))
     
-    # Abbreviated versions (for very long names)
+    # Abbreviated versions for long names
     if len(artist_name) > 20:
         words = artist_name.split()
         if len(words) > 1:
@@ -184,7 +184,6 @@ def is_likely_match(artist1: str, track1: str, artist2: str, track2: str,
     if not all([artist1, track1, artist2, track2]):
         return False
     
-    # Calculate scores
     artist_score = fuzzy_match_score(artist1, artist2, 'token_sort_ratio')
     track_score = fuzzy_match_score(track1, track2, 'token_sort_ratio')
     
@@ -196,9 +195,8 @@ def is_likely_match(artist1: str, track1: str, artist2: str, track2: str,
     combined_score = (artist_score * 0.6) + (track_score * 0.4)
     return combined_score >= threshold and artist_score >= 70 and track_score >= 70
 
-# Example usage and testing
+# Example use and testing
 if __name__ == "__main__":
-    # Test cases
     test_cases = [
         ("The Weeknd feat. Daft Punk", "I Feel It Coming (Explicit Version)"),
         ("Post Malone ft. 21 Savage", "rockstar - Radio Edit"),
