@@ -1,6 +1,8 @@
 // dashboard/src/App.js - React Frontend for Sentiment Dashboard
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // Components
 const SentimentCard = ({ title, value, change, color, explanation, showExplanations }) => (
@@ -138,6 +140,11 @@ const getSentimentColor = (sentiment) => {
 
 // Export Buttons Component
 const ExportButtons = ({ session }) => {
+  const analysisRef = React.useRef();
+  const platformSummariesRef = React.useRef();
+  const strategicInsightsRef = React.useRef();
+  const deepAnalysisRef = React.useRef();
+
   if (!session || !session.data) return null;
   
   const exportToCSV = (session) => {
@@ -226,96 +233,101 @@ const ExportButtons = ({ session }) => {
   };
 
   const exportToPDF = async (session) => {
-    // Simple HTML to PDF approach
-    const reportContent = `
-      <html>
-        <head>
-          <title>Sentiment Analysis Report - ${session.brand.name}</title>
-          <style>
-            body { font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; margin: 40px; line-height: 1.6; }
-            .header { text-align: center; margin-bottom: 30px; }
-            .metric { display: inline-block; margin: 10px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-            .platform-summary { margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; }
-            .data-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            .data-table th, .data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            .data-table th { background-color: #f2f2f2; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>Sentiment Analysis Report</h1>
-            <h2>${session.brand.name}</h2>
-            <p>Generated on ${new Date().toLocaleDateString()}</p>
-          </div>
-          
-          <div class="metrics">
-            <h3>Key Metrics</h3>
-            <div class="metric">
-              <strong>Overall Sentiment:</strong><br>
-              ${session.results?.key_metrics?.overall_sentiment || 'N/A'}
-            </div>
-            <div class="metric">
-              <strong>Brand Health:</strong><br>
-              ${session.results?.key_metrics?.brand_health_score || 'N/A'}/10
-            </div>
-            <div class="metric">
-              <strong>Confidence:</strong><br>
-              ${((session.results?.key_metrics?.sentiment_confidence || 0) * 100).toFixed(1)}%
-            </div>
-            <div class="metric">
-              <strong>Risk Level:</strong><br>
-              ${session.results?.key_metrics?.risk_level || 'N/A'}
-            </div>
-          </div>
-          
-          ${session.results?.platform_summaries ? `
-            <div class="platform-summaries">
-              <h3>Platform Summaries</h3>
-              ${Object.entries(session.results.platform_summaries).map(([platform, summary]) => `
-                <div class="platform-summary">
-                  <h4>${platform.toUpperCase()}</h4>
-                  <p>${summary.summary}</p>
-                  <p><strong>Mentions:</strong> ${summary.total_mentions} | <strong>Sentiment:</strong> ${summary.overall_sentiment}</p>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-          
-          <div class="data-section">
-            <h3>Collected Data Summary</h3>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Platform</th>
-                  <th>Mentions</th>
-                  <th>Sample Content</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${Object.entries(session.data || {}).map(([platform, mentions]) => `
-                  <tr>
-                    <td>${platform.toUpperCase()}</td>
-                    <td>${mentions.length}</td>
-                    <td>${mentions[0]?.content.substring(0, 100) || 'No data'}...</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </body>
-      </html>
-    `;
-    
-    // Open in new window for printing/saving as PDF
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(reportContent);
-    printWindow.document.close();
-    printWindow.focus();
-    
-    // Trigger print dialog (user can save as PDF)
-    setTimeout(() => {
-      printWindow.print();
-    }, 250);
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    async function addSectionToPDF(node, addNewPage = false) {
+      if (!node) return;
+      try {
+        const canvas = await html2canvas(node, { 
+          scale: 2, 
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = { width: pageWidth, height: (canvas.height * pageWidth) / canvas.width };
+        if (addNewPage) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, 0, imgProps.width, imgProps.height);
+      } catch (error) {
+        console.error('Error capturing section:', error);
+      }
+    }
+
+    // Page 1: Analysis Results (includes first row of platform summaries)
+    const analysisResultsNode = document.querySelector('.analysis-results');
+    if (analysisResultsNode) {
+      const tempAnalysisDiv = document.createElement('div');
+      tempAnalysisDiv.style.background = '#ffffff';
+      tempAnalysisDiv.style.padding = '20px';
+      tempAnalysisDiv.style.fontFamily = 'SF Pro, -apple-system, BlinkMacSystemFont, sans-serif';
+      tempAnalysisDiv.appendChild(analysisResultsNode.cloneNode(true));
+      document.body.appendChild(tempAnalysisDiv);
+      await addSectionToPDF(tempAnalysisDiv);
+      document.body.removeChild(tempAnalysisDiv);
+    }
+
+    // Page 2: Remaining platform summaries (if any), then Strategic Insights and Deep Analysis
+    const platformSummariesNode = document.querySelector('.platform-summaries');
+    const strategicInsightsNode = document.querySelector('.strategic-insights');
+    const deepAnalysisNode = document.querySelector('.deep-analysis');
+
+    let hasSecondPageContent = false;
+    const tempDiv = document.createElement('div');
+    tempDiv.style.background = '#ffffff';
+    tempDiv.style.padding = '20px';
+    tempDiv.style.fontFamily = 'SF Pro, -apple-system, BlinkMacSystemFont, sans-serif';
+
+    // Only add remaining platform summaries (not the ones already shown in the first row)
+    if (platformSummariesNode) {
+      const summaries = platformSummariesNode.querySelectorAll('.platform-summary');
+      // Find the number of platform summaries shown in the first row (as in the dashboard)
+      // We'll assume the first row is the number of columns in the .summaries-grid (usually 3)
+      const grid = platformSummariesNode.querySelector('.summaries-grid');
+      let firstRowCount = 3;
+      if (grid) {
+        const style = window.getComputedStyle(grid);
+        const columns = style.gridTemplateColumns.split(' ').length;
+        firstRowCount = columns;
+      }
+      // Add only the remaining summaries
+      if (summaries.length > firstRowCount) {
+        hasSecondPageContent = true;
+        const titleDiv = document.createElement('h3');
+        titleDiv.textContent = 'Platform Summaries (continued)';
+        titleDiv.style.marginBottom = '20px';
+        tempDiv.appendChild(titleDiv);
+        for (let i = firstRowCount; i < summaries.length; i++) {
+          tempDiv.appendChild(summaries[i].cloneNode(true));
+        }
+      }
+    }
+
+    // Add Strategic Insights and Deep Analysis
+    if (strategicInsightsNode) {
+      hasSecondPageContent = true;
+      tempDiv.appendChild(strategicInsightsNode.cloneNode(true));
+    }
+    if (deepAnalysisNode) {
+      hasSecondPageContent = true;
+      // Add some spacing if both are present
+      if (strategicInsightsNode) {
+        const spacer = document.createElement('div');
+        spacer.style.height = '40px';
+        tempDiv.appendChild(spacer);
+      }
+      tempDiv.appendChild(deepAnalysisNode.cloneNode(true));
+    }
+
+    if (hasSecondPageContent) {
+      pdf.addPage();
+      document.body.appendChild(tempDiv);
+      await addSectionToPDF(tempDiv);
+      document.body.removeChild(tempDiv);
+    }
+
+    pdf.save(`${session.brand.name}_sentiment_report.pdf`);
   };
   
   return (
@@ -387,7 +399,7 @@ function App() {
       const websocket = new WebSocket(getWebSocketUrl());
       
       websocket.onopen = () => {
-        console.log('🔗 Connected to WebSocket');
+        console.log('Connected to WebSocket');
         setWs(websocket);
         setConnectionStatus('connected');
       };
@@ -424,24 +436,24 @@ function App() {
             }
           }
         } catch (error) {
-          console.error('❌ Error parsing WebSocket message:', error);
+          console.error('Error parsing WebSocket message:', error);
         }
       };
       
       websocket.onclose = () => {
-        console.log('🔌 Disconnected from WebSocket');
+        console.log('Disconnected from WebSocket');
         setWs(null);
         setConnectionStatus('disconnected');
         
         // Attempt to reconnect after 3 seconds
         setTimeout(() => {
-          console.log('🔄 Attempting to reconnect...');
+          console.log('Attempting to reconnect...');
           connectWebSocket();
         }, 3000);
       };
       
       websocket.onerror = (error) => {
-        console.error('❌ WebSocket error:', error);
+        console.error('WebSocket error:', error);
         setConnectionStatus('error');
       };
     };
@@ -461,10 +473,10 @@ function App() {
         if (response.ok) {
           const existingSessions = await response.json();
           setSessions(existingSessions);
-          console.log(`📊 Loaded ${existingSessions.length} existing sessions`);
+          console.log(`Loaded ${existingSessions.length} existing sessions`);
         }
       } catch (error) {
-        console.error('❌ Error loading sessions:', error);
+        console.error('Error loading sessions:', error);
       }
     };
     
@@ -504,14 +516,14 @@ function App() {
       const result = await response.json();
       
       if (response.ok && result.success) {
-        console.log('✅ Analysis started:', result.sessionId);
+        console.log('Analysis started:', result.sessionId);
         // WebSocket will handle session updates
       } else {
         throw new Error(result.error || 'Failed to start analysis');
       }
       
     } catch (error) {
-      console.error('❌ Error starting analysis:', error);
+      console.error('Error starting analysis:', error);
       alert(`Error starting analysis: ${error.message}`);
       setIsAnalyzing(false);
     }
@@ -551,7 +563,7 @@ function App() {
         setIsAnalyzing(false);
       }
     } catch (error) {
-      console.error('❌ Error stopping analysis:', error);
+      console.error('Error stopping analysis:', error);
     }
   };
 
@@ -664,7 +676,7 @@ function App() {
 
       {/* Analysis Results */}
       {activeSession && activeSession.results && (
-        <section className="analysis-results">
+        <section className="analysis-results" id="analysis-results-section">
           <h2>Analysis Results: {activeSession.brand.name}</h2>
         {/* Key Metrics */}
           <div className="metrics-grid">
@@ -757,7 +769,7 @@ function App() {
 
         {/* Platform Summaries */}
           {activeSession.results.platform_summaries && (
-            <div className="platform-summaries">
+            <div className="platform-summaries" id="platform-summaries-section">
               <h3>Platform Summaries</h3>
               <div className="summaries-grid">
                 {Object.entries(activeSession.results.platform_summaries).map(([platform, summary]) => (
@@ -772,7 +784,7 @@ function App() {
           )}
         {/* Strategic Insights */}
           {activeSession.results.strategic_insights && (
-            <div className="strategic-insights">
+            <div className="strategic-insights" id="strategic-insights-section">
               <h3>Strategic Insights</h3>
               <div className="insights-content">
                 <p><strong>Health Reasoning:</strong> {activeSession.results.strategic_insights.health_reasoning}</p>
@@ -811,7 +823,7 @@ function App() {
         )}
           {/* Deep Analysis */}
           {activeSession.results.deep_analysis && (
-            <div className="deep-analysis">
+            <div className="deep-analysis" id="deep-analysis-section">
               <h3>Deep Analysis</h3>
               <div className="analysis-content">
                 {activeSession.results.deep_analysis.split('\n').map((paragraph, i) => (

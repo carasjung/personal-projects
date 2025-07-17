@@ -29,10 +29,10 @@ class HuggingFaceFirstSentimentAnalyzer {
             basic: { attempts: 0, failures: 0 }
         };
         
-        console.log('🤗 Hugging Face First Sentiment Analyzer initialized');
-        console.log('✅ Priority 1: Hugging Face models');
-        console.log('✅ Priority 2: Free APIs (Twinword, TextRazor)');
-        console.log('✅ Priority 3: Advanced Basic Sentiment (100% reliable)');
+        console.log('Hugging Face First Sentiment Analyzer initialized');
+        console.log('Priority 1: Hugging Face models');
+        console.log('Priority 2: Free APIs (Twinword, TextRazor)');
+        console.log('Priority 3: Advanced Basic Sentiment (100% reliable)');
     }
     
     async analyzeSentiment(text, platform = 'unknown') {
@@ -43,12 +43,12 @@ class HuggingFaceFirstSentimentAnalyzer {
         // PRIORITY 1: Try Hugging Face first
         if (this.hf && this.hasQuotaRemaining('huggingface', 1)) {
             try {
-                console.log('🤗 Attempting Hugging Face analysis...');
+                console.log('Attempting Hugging Face analysis...');
                 finalResult = await this.tryHuggingFaceModels(text);
                 methodUsed = 'huggingface_success';
                 this.apiQuotas.huggingface.used += 1;
                 this.failureStats.huggingface.attempts += 1;
-                console.log('✅ Hugging Face succeeded');
+                console.log('Hugging Face succeeded');
             } catch (error) {
                 console.log(`⚠️ Hugging Face failed: ${error.message}`);
                 this.failureStats.huggingface.attempts += 1;
@@ -65,7 +65,7 @@ class HuggingFaceFirstSentimentAnalyzer {
                 finalResult = await this.tryFreeAPIs(text);
                 methodUsed = 'free_apis_fallback';
                 this.failureStats.freeApis.attempts += 1;
-                console.log('✅ Free APIs succeeded');
+                console.log('Free APIs succeeded');
             } catch (error) {
                 console.log(`⚠️ Free APIs failed: ${error.message}`);
                 this.failureStats.freeApis.attempts += 1;
@@ -75,7 +75,7 @@ class HuggingFaceFirstSentimentAnalyzer {
         
         // PRIORITY 3: If everything failed, use Advanced Basic (always works)
         if (!finalResult) {
-            console.log('🔧 All APIs failed, using reliable basic sentiment...');
+            console.log('All APIs failed, using reliable basic sentiment...');
             const basicResult = this.basicSentiment.analyzeSentiment(text);
             finalResult = {
                 label: basicResult.label,
@@ -85,7 +85,7 @@ class HuggingFaceFirstSentimentAnalyzer {
             };
             methodUsed = 'basic_fallback';
             this.failureStats.basic.attempts += 1;
-            console.log('✅ Basic sentiment completed (100% reliable)');
+            console.log('Basic sentiment completed (100% reliable)');
         }
         
         const analysisTime = Date.now() - analysisStart;
@@ -106,7 +106,7 @@ class HuggingFaceFirstSentimentAnalyzer {
         // Try each HF model in order
         for (const model of this.hfModels) {
             try {
-                console.log(`🤗 Trying HF model: ${model}`);
+                console.log(`Trying HF model: ${model}`);
                 
                 const result = await Promise.race([
                     this.hf.textClassification({
@@ -119,7 +119,7 @@ class HuggingFaceFirstSentimentAnalyzer {
                 ]);
                 
                 const normalized = this.normalizeHuggingFaceResult(result);
-                console.log(`✅ HF model ${model} succeeded`);
+                console.log(`HF model ${model} succeeded`);
                 
                 return {
                     label: normalized.label,
@@ -130,7 +130,7 @@ class HuggingFaceFirstSentimentAnalyzer {
                 };
                 
             } catch (error) {
-                console.log(`❌ HF model ${model} failed: ${error.message}`);
+                console.log(`HF model ${model} failed: ${error.message}`);
                 continue; // Try next model
             }
         }
@@ -144,7 +144,7 @@ class HuggingFaceFirstSentimentAnalyzer {
             try {
                 const result = await this.analyzeWithTwinword(text);
                 this.apiQuotas.twinword.used += text.length;
-                console.log('✅ Twinword API succeeded');
+                console.log('Twinword API succeeded');
                 return {
                     label: result.label,
                     score: result.score,
@@ -153,7 +153,7 @@ class HuggingFaceFirstSentimentAnalyzer {
                     enhanced_data: result
                 };
             } catch (error) {
-                console.log(`❌ Twinword failed: ${error.message}`);
+                console.log(`Twinword failed: ${error.message}`);
             }
         }
         
@@ -162,7 +162,7 @@ class HuggingFaceFirstSentimentAnalyzer {
             try {
                 const result = await this.analyzeWithTextRazor(text);
                 this.apiQuotas.textrazor.used += 1;
-                console.log('✅ TextRazor API succeeded');
+                console.log('TextRazor API succeeded');
                 return {
                     label: result.label,
                     score: result.score,
@@ -171,7 +171,7 @@ class HuggingFaceFirstSentimentAnalyzer {
                     enhanced_data: result
                 };
             } catch (error) {
-                console.log(`❌ TextRazor failed: ${error.message}`);
+                console.log(`TextRazor failed: ${error.message}`);
             }
         }
         
@@ -293,7 +293,7 @@ class HuggingFaceFirstSentimentAnalyzer {
     }
     
     async analyzeBatch(texts, platform = 'unknown') {
-        console.log(`🔄 Analyzing ${texts.length} texts for ${platform} (HF first, then fallbacks)...`);
+        console.log(`Analyzing ${texts.length} texts for ${platform} (HF first, then fallbacks)...`);
         
         const results = [];
         const batchSize = 3;
@@ -320,8 +320,8 @@ class HuggingFaceFirstSentimentAnalyzer {
             methodCounts[r.method_used] = (methodCounts[r.method_used] || 0) + 1;
         });
         
-        console.log('📊 Analysis method distribution:', methodCounts);
-        console.log(`✅ Completed ${results.length} sentiment analyses`);
+        console.log('Analysis method distribution:', methodCounts);
+        console.log(`Completed ${results.length} sentiment analyses`);
         
         return results;
     }
@@ -353,7 +353,7 @@ class HuggingFaceFirstSentimentAnalyzer {
         this.apiQuotas.huggingface.used = 0;
         this.apiQuotas.twinword.used = 0;
         this.apiQuotas.textrazor.used = 0;
-        console.log('🔄 Monthly API quotas reset');
+        console.log('Monthly API quotas reset');
     }
     
     getAnalyticsReport() {

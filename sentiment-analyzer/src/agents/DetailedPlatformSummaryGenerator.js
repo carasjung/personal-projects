@@ -6,14 +6,14 @@ class DetailedPlatformSummaryGenerator {
     }
     
     async generateDetailedPlatformSummaries(data, sentimentData, brandConfig) {
-        console.log('📝 Generating detailed platform summaries with user quotes...');
+        console.log('Generating detailed platform summaries with user quotes...');
         
         const summaries = {};
         
         for (const [platform, mentions] of Object.entries(data)) {
             if (mentions.length === 0) continue;
             
-            console.log(`📝 Creating detailed summary for ${platform}...`);
+            console.log(`Creating detailed summary for ${platform}...`);
             
             // Get platform sentiment data
             const platformSentiment = sentimentData[platform];
@@ -181,37 +181,31 @@ class DetailedPlatformSummaryGenerator {
     analyzeContentThemes(mentions) {
         const allText = mentions.map(m => m.content.toLowerCase()).join(' ');
         
-        // Character-specific themes for School Bus Graveyard
-        const characterThemes = {
-            'aiden': this.countMentions(allText, ['aiden', 'clark']),
-            'ashlyn': this.countMentions(allText, ['ashlyn', 'banner']),
-            'tyler': this.countMentions(allText, ['tyler', 'hernandez']),
-            'taylor': this.countMentions(allText, ['taylor', 'hernandez']),
-            'ben': this.countMentions(allText, ['ben', 'clark']),
-            'logan': this.countMentions(allText, ['logan', 'fields'])
-        };
-        
-        // Content themes
+        // Generic content themes that work for any brand/category
         const contentThemes = {
-            'art_style': this.countMentions(allText, ['art', 'artwork', 'drawing', 'illustration', 'animation']),
-            'story_plot': this.countMentions(allText, ['story', 'plot', 'narrative', 'storyline', 'chapter']),
-            'suspense_horror': this.countMentions(allText, ['scary', 'horror', 'suspense', 'thriller', 'creepy', 'phantom']),
-            'character_development': this.countMentions(allText, ['character', 'development', 'personality', 'growth']),
-            'emotional_impact': this.countMentions(allText, ['emotional', 'feelings', 'cry', 'tears', 'heart']),
-            'pacing': this.countMentions(allText, ['pacing', 'slow', 'fast', 'rushed', 'speed']),
-            'world_building': this.countMentions(allText, ['world', 'dimension', 'phantom world', 'setting'])
+            'quality': this.countMentions(allText, ['amazing', 'awesome', 'incredible', 'excellent', 'perfect', 'love', 'best', 'great', 'fantastic', 'wonderful']),
+            'negative_quality': this.countMentions(allText, ['bad', 'terrible', 'boring', 'disappointing', 'worst', 'hate', 'awful', 'horrible', 'disgusting']),
+            'service': this.countMentions(allText, ['service', 'customer', 'support', 'help', 'assistance', 'care']),
+            'product': this.countMentions(allText, ['product', 'item', 'goods', 'merchandise', 'stuff', 'thing']),
+            'price': this.countMentions(allText, ['price', 'cost', 'expensive', 'cheap', 'affordable', 'value', 'money', 'worth']),
+            'experience': this.countMentions(allText, ['experience', 'feel', 'felt', 'tried', 'used', 'bought', 'boughted']),
+            'recommendation': this.countMentions(allText, ['recommend', 'suggest', 'advise', 'should', 'would', 'will']),
+            'comparison': this.countMentions(allText, ['better', 'worse', 'compared', 'versus', 'instead', 'than']),
+            'innovation': this.countMentions(allText, ['new', 'innovative', 'creative', 'unique', 'different', 'original']),
+            'reliability': this.countMentions(allText, ['reliable', 'trustworthy', 'able', 'consistent', 'stable']),
+            'convenience': this.countMentions(allText, ['convenient', 'easy', 'simple', 'quick', 'fast', 'slow', 'difficult'])
         };
         
         // Quality themes
         const qualityThemes = {
-            'positive_quality': this.countMentions(allText, ['amazing', 'awesome', 'incredible', 'excellent', 'perfect', 'love', 'best']),
-            'negative_quality': this.countMentions(allText, ['bad', 'terrible', 'boring', 'disappointing', 'worst', 'hate']),
-            'confusion': this.countMentions(allText, ['confused', 'confusing', 'unclear', "don't understand"]),
-            'anticipation': this.countMentions(allText, ['waiting', 'next', 'upcoming', 'can\'t wait', 'soon'])
+            'positive_quality': this.countMentions(allText, ['amazing', 'awesome', 'incredible', 'excellent', 'perfect', 'love', 'best', 'great', 'fantastic', 'wonderful']),
+            'negative_quality': this.countMentions(allText, ['bad', 'terrible', 'boring', 'disappointing', 'worst', 'hate', 'awful', 'horrible', 'disgusting']),
+            'confusion': this.countMentions(allText, ['confused', 'confusing', 'unclear', "don't understand", 'complicated', 'complex']),
+            'anticipation': this.countMentions(allText, ['waiting', 'next', 'upcoming', 'can\'t wait', 'soon', 'future', 'later'])
         };
         
         // Extract top themes
-        const allThemes = { ...characterThemes, ...contentThemes, ...qualityThemes };
+        const allThemes = { ...contentThemes, ...qualityThemes };
         const topThemes = Object.entries(allThemes)
             .filter(([theme, count]) => count > 0)
             .sort((a, b) => b[1] - a[1])
@@ -224,11 +218,12 @@ class DetailedPlatformSummaryGenerator {
         return {
             themes: topThemes,
             topics: topics,
-            character_focus: Object.entries(characterThemes)
-                .filter(([char, count]) => count > 0)
+            // Remove character_focus as it's specific to entertainment content
+            content_focus: Object.entries(contentThemes)
+                .filter(([theme, count]) => count > 0)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 3)
-                .map(([char]) => char)
+                .map(([theme]) => theme)
         };
     }
     
@@ -245,11 +240,13 @@ class DetailedPlatformSummaryGenerator {
         const words = allText.split(/\s+/);
         const wordCount = {};
         
-        // Important terms get priority
-        const importantTerms = [
-            'aiden', 'ashlyn', 'tyler', 'taylor', 'ben', 'logan',
-            'phantom', 'dimension', 'bus', 'graveyard', 'episode', 'chapter',
-            'webtoon', 'comic', 'story', 'character', 'art'
+        // Generic important terms that work for any brand/category
+        const genericImportantTerms = [
+            'quality', 'service', 'product', 'price', 'value', 'experience',
+            'recommend', 'suggest', 'better', 'worse', 'bad',
+            'love', 'hate', 'amazing', 'terrible', 'excellent', 'poor',
+            'customer', 'support', 'help', 'buy', 'purchase', 'try',
+            'new', 'old', 'best', 'worst', 'great', 'awful'
         ];
         
         words.forEach(word => {
@@ -259,10 +256,10 @@ class DetailedPlatformSummaryGenerator {
             }
         });
         
-        // Boost important terms
-        importantTerms.forEach(term => {
+        // Boost generic important terms
+        genericImportantTerms.forEach(term => {
             if (wordCount[term]) {
-                wordCount[term] *= 3;
+                wordCount[term] *= 2; // Reduced boost since these are more generic
             }
         });
         
@@ -287,9 +284,9 @@ class DetailedPlatformSummaryGenerator {
             summary += `The primary discussion theme is ${topTheme.theme.replace(/_/g, ' ')} (${topTheme.mentions} mentions). `;
         }
         
-        // Add character focus for entertainment content
-        if (contentAnalysis.character_focus.length > 0) {
-            summary += `Popular characters mentioned include ${contentAnalysis.character_focus.join(', ')}. `;
+        // Add content focus for any brand/category
+        if (contentAnalysis.content_focus && contentAnalysis.content_focus.length > 0) {
+            summary += `Key discussion areas include ${contentAnalysis.content_focus.join(', ')}. `;
         }
         
         // Add quote-based insights

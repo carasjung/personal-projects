@@ -103,21 +103,22 @@ body {
 /* Main Content */
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1rem;
+  max-width: 100%;
+  margin: 0;
   width: 100%;
 }
 
 /* Analysis Form */
 .analysis-form {
-  background: none;
-  border-radius: 0;
-  box-shadow: none;
-  border: none;
-  padding: 0;
-  margin: 3rem auto 2.5rem auto;
-  max-width: 540px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5rem;
+  margin: 0.5rem 0 0.5rem 0;
+  max-width: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -129,7 +130,7 @@ body {
   font-size: 2.0rem;
   font-weight: 300 !important;
   font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
   color: #181818;
   letter-spacing: 0.01em;
 }
@@ -174,7 +175,7 @@ body {
   font-size: 0.7rem;
   font-weight: 300 !important;
   font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-  background: #fafbfc;
+  background: gba(255, 255, 255, 0.95);
   transition: border 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
@@ -354,8 +355,8 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  padding: 6rem;
+  margin: 0 1rem 1rem 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -739,7 +740,8 @@ li {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 3rem;
+  margin: 0 1rem 1rem 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 300 !important;
@@ -759,6 +761,7 @@ li {
 
 .session-item {
   padding: 1.5rem;
+  width: 100%;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1357,6 +1360,8 @@ li {
   background: #fafbfc;
   resize: none;
   margin-top: 0.2rem;
+  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
 }
 
 /* 1. Keywords text area placeholder font */
@@ -1399,7 +1404,7 @@ li {
   background: #bbb;
   border: 2.5px solid #bbb;
   font-size: 1.08rem;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: none;
   font-weight: 300 !important;
   font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
   color: #222 !important;
@@ -1424,9 +1429,29 @@ li {
   display: none;
 }
 
+.checkbox-label:active {
+  background: #bbb !important;
+  border-color: #bbb !important;
+}
+
+.checkbox-label:active {
+  background: #bbb !important;
+  border-color: #bbb !important;
+}
+
+.checkbox-label.checked:active {
+  background: #bbb !important;
+  border-color: #bbb !important;
+}
+
 .checkbox-label:hover {
-  background: #eafaff;
-  border-color: #00bfff;
+  background: #bbb !important;
+  border-color: #bbb !important;
+}
+
+.checkbox-label.checked:hover {
+  background: #e6f9ff !important;
+  border-color: #00bfff !important;
 }
 
 .start-button {

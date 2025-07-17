@@ -12,14 +12,14 @@ class RedditAPIScraper {
     }
     
     async initialize() {
-        console.log('🔑 Authenticating with Reddit API...');
+        console.log('Authenticating with Reddit API...');
         
         try {
             await this.authenticate();
-            console.log('✅ Reddit API authentication successful');
+            console.log('Reddit API authentication successful');
             return true;
         } catch (error) {
-            console.error('❌ Reddit API authentication failed:', error.message);
+            console.error('Reddit API authentication failed:', error.message);
             return false;
         }
     }
@@ -49,7 +49,7 @@ class RedditAPIScraper {
     }
     
     async scrapeBrandSentiment(brandConfig) {
-        console.log(`🔍 Reddit API: Searching for "${brandConfig.name}"...`);
+        console.log(`Reddit API: Searching for "${brandConfig.name}"...`);
         
         await this.ensureValidToken();
         
@@ -71,11 +71,11 @@ class RedditAPIScraper {
             const uniquePosts = this.removeDuplicates(postsWithComments);
             const relevantPosts = this.filterRelevantPosts(uniquePosts, brandConfig);
             
-            console.log(`✅ Reddit API: Found ${relevantPosts.length} relevant posts/comments`);
+            console.log(`Reddit API: Found ${relevantPosts.length} relevant posts/comments`);
             return relevantPosts;
             
         } catch (error) {
-            console.error('❌ Reddit API scraping failed:', error.message);
+            console.error('Reddit API scraping failed:', error.message);
             return [];
         }
     }
@@ -113,7 +113,7 @@ class RedditAPIScraper {
                 }
                 
             } catch (error) {
-                console.error(`❌ Search error for "${query}":`, error.message);
+                console.error(`Search error for "${query}":`, error.message);
             }
         }
         
@@ -151,7 +151,7 @@ class RedditAPIScraper {
                 }
                 
             } catch (error) {
-                console.error(`❌ Subreddit search error for r/${subreddit}:`, error.message);
+                console.error(`Subreddit search error for r/${subreddit}:`, error.message);
             }
         }
         
@@ -174,7 +174,7 @@ class RedditAPIScraper {
                 enrichedPosts.push(...comments);
                 
             } catch (error) {
-                console.error(`❌ Comments error for post ${post.reddit_id}:`, error.message);
+                console.error(`Comments error for post ${post.reddit_id}:`, error.message);
             }
         }
         
@@ -220,7 +220,7 @@ class RedditAPIScraper {
             }
             
         } catch (error) {
-            console.error(`❌ Comment fetch error:`, error.message);
+            console.error(`Comment fetch error:`, error.message);
         }
         
         return comments;

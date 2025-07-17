@@ -30,7 +30,7 @@ class UniversalYouTubeScraper {
     }
     
     async searchBrandVideos(brandConfig, maxResults = 5) {
-        console.log(`🔍 Searching YouTube for: ${brandConfig.name}`);
+        console.log(`Searching YouTube for: ${brandConfig.name}`);
         
         // Use our own method to generate search queries
         const searchQueries = this.generateSearchQueries(brandConfig, 'youtube');
@@ -69,7 +69,7 @@ class UniversalYouTubeScraper {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
             } catch (error) {
-                console.error(`❌ Search error for "${query}":`, error.message);
+                console.error(`Search error for "${query}":`, error.message);
                 if (error.response?.status === 403) {
                     console.log('⚠️ YouTube API quota exceeded - using mock data');
                     return this.generateMockVideoData(brandConfig);
@@ -82,7 +82,7 @@ class UniversalYouTubeScraper {
             index === self.findIndex(v => v.videoId === video.videoId)
         );
         
-        console.log(`✅ Found ${uniqueVideos.length} unique videos`);
+        console.log(`Found ${uniqueVideos.length} unique videos`);
         return uniqueVideos.length > 0 ? uniqueVideos : this.generateMockVideoData(brandConfig);
     }
     
@@ -106,7 +106,7 @@ class UniversalYouTubeScraper {
     }
     
     async getBrandComments(brandConfig, videoId, maxResults = 20) {
-        console.log(`💬 Getting comments for video: ${videoId}`);
+        console.log(`Getting comments for video: ${videoId}`);
         
         // If mock video, return mock comments
         if (videoId.includes('mock')) {
@@ -145,11 +145,11 @@ class UniversalYouTubeScraper {
                 };
             });
             
-            console.log(`✅ Extracted ${comments.length} comments`);
+            console.log(`Extracted ${comments.length} comments`);
             return comments;
             
         } catch (error) {
-            console.error('❌ Comments error:', error.message);
+            console.error('Comments error:', error.message);
             return this.generateMockCommentsForVideo(brandConfig, videoId);
         }
     }
@@ -222,7 +222,7 @@ class UniversalYouTubeScraper {
             const videos = await this.searchBrandVideos(brandConfig, 3);
             
             for (const video of videos.slice(0, 2)) { // Limit to 2 videos for testing
-                console.log(`\n📺 Processing: "${video.title}"`);
+                console.log(`\nProcessing: "${video.title}"`);
                 
                 const videoComments = await this.getBrandComments(brandConfig, video.videoId, 10);
                 
@@ -237,7 +237,7 @@ class UniversalYouTubeScraper {
             }
             
         } catch (error) {
-            console.error('❌ Scraping error:', error);
+            console.error('Scraping error:', error);
             // Return mock data if everything fails
             return this.generateMockCommentsForVideo(brandConfig, 'mock_video_fallback');
         }

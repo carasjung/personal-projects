@@ -9,7 +9,7 @@ try {
     const ollamaModule = require('ollama');
     ollama = ollamaModule.default || ollamaModule;
     if (ollama && typeof ollama.chat === 'function') {
-        console.log('✅ Ollama initialized successfully');
+        console.log('Ollama initialized successfully');
     } else {
         ollama = null;
     }
@@ -43,36 +43,36 @@ class EnhancedSentimentOrchestrator {
             summary: true
         };
         
-        console.log('🧠 Enhanced Sentiment Orchestrator with Platform Summaries initialized');
+        console.log('Enhanced Sentiment Orchestrator with Platform Summaries initialized');
     }
     
     async analyzeBrandSentiment(brandConfig, multiPlatformData) {
-        console.log(`🧠 Enhanced AI Analysis for: ${brandConfig.name}`);
-        console.log(`📊 Processing ${this.getTotalMentions(multiPlatformData)} mentions across platforms`);
+        console.log(`Enhanced AI Analysis for: ${brandConfig.name}`);
+        console.log(`Processing ${this.getTotalMentions(multiPlatformData)} mentions across platforms`);
         
         try {
             // Step 1: Robust Sentiment Analysis with Fallback
-            console.log('🤗 Running sentiment analysis with fallback models...');
+            console.log('Running sentiment analysis with fallback models...');
             const sentimentAnalysis = await this.robustSentimentAnalysisWithFallback(multiPlatformData);
             
             // Step 2: Emotion Analysis
-            console.log('😊 Running emotion analysis...');
+            console.log('Running emotion analysis...');
             const emotionAnalysis = await this.robustEmotionAnalysis(multiPlatformData);
             
             // Step 3: Platform Summaries (NEW!)
-            console.log('📝 Generating platform summaries...');
+            console.log('Generating platform summaries...');
             const platformSummaries = await this.generatePlatformSummaries(multiPlatformData, sentimentAnalysis, brandConfig);
             
             // Step 4: Strategic Analysis
-            console.log('🎯 Running strategic analysis...');
+            console.log('Running strategic analysis...');
             const strategicInsights = await this.improvedGroqAnalysis(brandConfig, multiPlatformData, sentimentAnalysis);
             
             // Step 5: Platform Analysis
-            console.log('📱 Running platform analysis...');
+            console.log('Running platform analysis...');
             const platformAnalysis = await this.enhancedPlatformAnalysis(multiPlatformData, sentimentAnalysis);
             
             // Step 6: Deep Analysis
-            console.log('🔬 Running deep analysis...');
+            console.log('Running deep analysis...');
             const deepInsights = await this.robustOllamaAnalysis(brandConfig, multiPlatformData, {
                 sentiment: sentimentAnalysis,
                 emotions: emotionAnalysis,
@@ -94,13 +94,13 @@ class EnhancedSentimentOrchestrator {
             return finalReport;
             
         } catch (error) {
-            console.error('❌ Enhanced AI Analysis failed:', error.message);
+            console.error('Enhanced AI Analysis failed:', error.message);
             return this.generateFallbackReport(brandConfig, multiPlatformData);
         }
     }
     
     async robustSentimentAnalysisWithFallback(data) {
-        console.log('🤗 Hugging Face: Sentiment analysis with model fallback...');
+        console.log('Hugging Face: Sentiment analysis with model fallback...');
         
         const results = {};
         
@@ -152,7 +152,7 @@ class EnhancedSentimentOrchestrator {
                             sentiment = this.normalizeSentiment(result);
                             modelUsed = 'fallback_distilbert';
                             this.hfQuotaUsed++;
-                            console.log(`✅ Fallback model working for ${platform}`);
+                            console.log(`Fallback model working for ${platform}`);
                         }
                     } catch (fallbackError) {
                         console.log(`⚠️  Both HF models failed for ${platform}, using enhanced basic`);
@@ -193,14 +193,14 @@ class EnhancedSentimentOrchestrator {
     }
     
     async generatePlatformSummaries(data, sentimentData, brandConfig) {
-        console.log('📝 Generating platform summaries...');
+        console.log('Generating platform summaries...');
         
         const summaries = {};
         
         for (const [platform, mentions] of Object.entries(data)) {
             if (mentions.length === 0) continue;
             
-            console.log(`📝 Creating summary for ${platform}...`);
+            console.log(`Creating summary for ${platform}...`);
             
             // Get platform sentiment data
             const platformSentiment = sentimentData[platform];
@@ -267,7 +267,7 @@ class EnhancedSentimentOrchestrator {
     }
     
     generateRuleBasedSummary(platform, mentions, overallSentiment, brandConfig) {
-        console.log(`📝 Creating rule-based summary for ${platform}...`);
+                        console.log(`Creating rule-based summary for ${platform}...`);
         
         // Analyze mention content for key themes
         const themes = this.analyzeThemes(mentions);
@@ -288,12 +288,10 @@ class EnhancedSentimentOrchestrator {
         
         // Add character/topic mentions
         if (topics.length > 0) {
-            const characterMentions = topics.filter(topic => 
-                ['aiden', 'ashlyn', 'tyler', 'taylor', 'ben', 'logan'].includes(topic.toLowerCase())
-            );
-            
-            if (characterMentions.length > 0) {
-                summary += `Popular discussion topics include ${characterMentions.slice(0, 3).join(', ')}. `;
+            // Use generic topic mentions instead of character-specific ones
+            const keyTopics = topics.slice(0, 3);
+            if (keyTopics.length > 0) {
+                summary += `Key discussion topics include ${keyTopics.join(', ')}. `;
             }
         }
         
@@ -377,8 +375,14 @@ class EnhancedSentimentOrchestrator {
         const words = allText.split(/\s+/);
         const wordCount = {};
         
-        // Character names and key terms for School Bus Graveyard
-        const importantTerms = ['aiden', 'ashlyn', 'tyler', 'taylor', 'ben', 'logan', 'phantom', 'dimension', 'bus', 'graveyard', 'episode', 'chapter'];
+        // Generic important terms that work for any brand/category
+        const importantTerms = [
+            'quality', 'service', 'product', 'price', 'value', 'experience',
+            'recommend', 'suggest', 'better', 'worse', 'good',
+            'love', 'hate', 'amazing', 'terrible', 'excellent', 'poor',
+            'customer', 'support', 'help', 'buy', 'purchase', 'try',
+            'new', 'old', 'best', 'worst', 'great', 'awful'
+        ];
         
         words.forEach(word => {
             const cleanWord = word.replace(/[^\w]/g, '');
@@ -390,7 +394,7 @@ class EnhancedSentimentOrchestrator {
         // Prioritize important terms
         importantTerms.forEach(term => {
             if (wordCount[term]) {
-                wordCount[term] *= 3; // Boost important terms
+                wordCount[term] *= 2; // Reduced boost since these are more generic
             }
         });
         

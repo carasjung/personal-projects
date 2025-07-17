@@ -46,11 +46,12 @@ function formatKeyTopics(mentions) {
     const words = allText.split(/\s+/);
     const wordCount = {};
     
-    // Important terms get priority
+    // Generic important terms that work for any brand/category
     const importantTerms = [
-        'aiden', 'ashlyn', 'tyler', 'taylor', 'ben', 'logan',
-        'phantom', 'dimension', 'episode', 'chapter', 'webtoon', 
-        'horror', 'suspense', 'character', 'story', 'art'
+        'quality', 'service', 'product', 'price', 'value', 'experience',
+        'recommend', 'suggest', 'better', 'worse', 'good', 'love', 'hate', 'amazing', 'terrible', 'excellent', 'poor',
+        'customer', 'support', 'help', 'buy', 'purchase', 'try',
+        'new', 'old', 'best', 'worst', 'great', 'awful'
     ];
     
     words.forEach(word => {
@@ -63,7 +64,7 @@ function formatKeyTopics(mentions) {
     // Boost important terms
     importantTerms.forEach(term => {
         if (wordCount[term]) {
-            wordCount[term] *= 3;
+            wordCount[term] *= 2; // Reduced boost since these are more generic
         }
     });
     
@@ -122,19 +123,19 @@ function isStopWord(word) {
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {
-    console.log('🔗 Client connected to WebSocket');
+    console.log('Client connected to WebSocket');
     
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
-            console.log('📨 Received:', data);
+            console.log('Received:', data);
         } catch (error) {
-            console.error('❌ Invalid WebSocket message:', error);
+            console.error('Invalid WebSocket message:', error);
         }
     });
     
     ws.on('close', () => {
-        console.log('🔌 Client disconnected from WebSocket');
+        console.log('Client disconnected from WebSocket');
     });
 });
 
@@ -256,7 +257,7 @@ app.post('/api/analyze', async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Error starting analysis:', error);
+        console.error('Error starting analysis:', error);
         res.status(500).json({ 
             error: 'Failed to start analysis',
             details: error.message 
@@ -303,7 +304,7 @@ app.get('/api/sessions/:sessionId/results', (req, res) => {
 // Main sentiment analysis function
 async function runSentimentAnalysis(sessionId, brandConfig) {
     try {
-        console.log(`🧠 Starting enhanced analysis for session: ${sessionId}`);
+        console.log(`Starting enhanced analysis for session: ${sessionId}`);
         
         analysisManager.updateSession(sessionId, {
             status: 'collecting',
@@ -345,7 +346,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     ].filter(k => k && k.trim())
                 };
                 
-                console.log(`🔍 YouTube enhanced search targeting 200+ comments`);
+                console.log(`YouTube enhanced search targeting 200+ comments`);
                 
                 // Use the enhanced method if available, otherwise fallback
                 if (typeof youtubeScraper.scrapeBrandSentimentEnhanced === 'function') {
@@ -354,16 +355,16 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     multiPlatformData.youtube = await youtubeScraper.scrapeBrandSentiment(enhancedYouTubeConfig);
                 }
                 
-                console.log(`📺 YouTube collected: ${multiPlatformData.youtube.length} comments`);
+                console.log(`YouTube collected: ${multiPlatformData.youtube.length} comments`);
                 
                 analysisManager.updateSession(sessionId, {
                     progress: 25,
-                    currentStep: `✅ YouTube: ${multiPlatformData.youtube.length} comments collected`,
+                    currentStep: `YouTube: ${multiPlatformData.youtube.length} comments collected`,
                     data: { ...analysisManager.getSession(sessionId).data, youtube: multiPlatformData.youtube }
                 });
                 
             } catch (error) {
-                console.error('❌ YouTube collection error:', error.message);
+                console.error('YouTube collection error:', error.message);
                 multiPlatformData.youtube = [];
             }
         }
@@ -385,12 +386,12 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                 
                 analysisManager.updateSession(sessionId, {
                     progress: 45,
-                    currentStep: `✅ Quora: ${multiPlatformData.quora.length} discussions collected`,
+                    currentStep: `Quora: ${multiPlatformData.quora.length} discussions collected`,
                     data: { ...analysisManager.getSession(sessionId).data, quora: multiPlatformData.quora }
                 });
                 
             } catch (error) {
-                console.error('❌ Quora collection error:', error.message);
+                console.error('Quora collection error:', error.message);
                 multiPlatformData.quora = [];
             }
         }
@@ -409,9 +410,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                 const enhancedRedditConfig = {
                     ...brandConfig,
                     targetSubreddits: [
-                        'webtoons', 'comics', 'manhwa', 'manga', 
-                        'horror', 'thriller', 'webcomics', 'otomeisekai',
-                        'schoolbusgraveyard', 'redcanvas', 'Episode'
+                        'reviews', 'products', 'brands', 'shopping', 'recommendations'
                     ],
                     postsPerSubreddit: 50,    // INCREASED from 25 to 50
                     totalPostsTarget: 500,    // INCREASED from 200 to 500
@@ -420,7 +419,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     timeFilter: 'month'       // Last month of posts
                 };
                 
-                console.log(`🔍 Reddit targeting 500+ posts across ${enhancedRedditConfig.targetSubreddits.length} subreddits`);
+                console.log(`Reddit targeting 500+ posts across ${enhancedRedditConfig.targetSubreddits.length} subreddits`);
                 
                 // Use enhanced method if available
                 if (typeof redditScraper.scrapeBrandSentimentEnhanced === 'function') {
@@ -430,16 +429,16 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     multiPlatformData.reddit = generateEnhancedRedditMockData(brandConfig, 50); // 50 posts instead of 30
                 }
                 
-                console.log(`🔍 Reddit collected: ${multiPlatformData.reddit.length} posts and comments`);
+                console.log(`Reddit collected: ${multiPlatformData.reddit.length} posts and comments`);
                 
                 analysisManager.updateSession(sessionId, {
                     progress: 65,
-                    currentStep: `✅ Reddit: ${multiPlatformData.reddit.length} posts collected`,
+                    currentStep: `Reddit: ${multiPlatformData.reddit.length} posts collected`,
                     data: { ...analysisManager.getSession(sessionId).data, reddit: multiPlatformData.reddit }
                 });
                 
             } catch (error) {
-                console.error('❌ Reddit collection error:', error.message);
+                console.error('Reddit collection error:', error.message);
                 // Generate substantial mock data as fallback
                 multiPlatformData.reddit = generateEnhancedRedditMockData(brandConfig, 50);
             }
@@ -480,7 +479,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     ]
                 };
                 
-                console.log(`🐦 Twitter targeting 1000+ tweets with ${enhancedTwitterConfig.searchVariations.length} search variations`);
+                console.log(`Twitter targeting 1000+ tweets with ${enhancedTwitterConfig.searchVariations.length} search variations`);
                 
                 // Use enhanced method if available
                 if (typeof twitterScraper.scrapeBrandSentimentEnhanced === 'function') {
@@ -490,16 +489,16 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                     multiPlatformData.twitter = generateEnhancedTwitterMockData(brandConfig, 100); // 100 tweets instead of 50
                 }
                 
-                console.log(`🐦 Twitter collected: ${multiPlatformData.twitter.length} tweets`);
+                console.log(`Twitter collected: ${multiPlatformData.twitter.length} tweets`);
                 
                 analysisManager.updateSession(sessionId, {
                     progress: 80,
-                    currentStep: `✅ Twitter: ${multiPlatformData.twitter.length} tweets collected`,
+                    currentStep: `Twitter: ${multiPlatformData.twitter.length} tweets collected`,
                     data: { ...analysisManager.getSession(sessionId).data, twitter: multiPlatformData.twitter }
                 });
                 
             } catch (error) {
-                console.error('❌ Twitter collection error:', error.message);
+                console.error('Twitter collection error:', error.message);
                 // Generate substantial mock data as fallback
                 multiPlatformData.twitter = generateEnhancedTwitterMockData(brandConfig, 100);
             }
@@ -507,8 +506,8 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
 
         // Enhanced Data Summary
         const totalMentions = Object.values(multiPlatformData).reduce((sum, arr) => sum + arr.length, 0);
-        console.log(`📊 Total mentions collected: ${totalMentions}`);
-        console.log('📋 Platform breakdown:', Object.entries(multiPlatformData).map(([platform, data]) => 
+        console.log(`Total mentions collected: ${totalMentions}`);
+        console.log('Platform breakdown:', Object.entries(multiPlatformData).map(([platform, data]) => 
             `${platform}: ${data.length}`
         ).join(', '));
 
@@ -520,7 +519,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
 
         try {
             // Step 1: Hugging Face First + Fallback Sentiment Analysis
-            console.log('🤗 Running HF-first sentiment analysis...');
+            console.log('Running HF-first sentiment analysis...');
             const enhancedSentimentResults = {};
             
             for (const [platform, mentions] of Object.entries(multiPlatformData)) {
@@ -578,7 +577,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                 }
             };
             
-            console.log('🧠 Enhanced AI analysis completed successfully');
+            console.log('Enhanced AI analysis completed successfully');
 
             // Finalize session
             analysisManager.updateSession(sessionId, {
@@ -589,10 +588,10 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
                 data: multiPlatformData
             });
 
-            console.log(`✅ Enhanced analysis session ${sessionId} completed successfully`);
+            console.log(`Enhanced analysis session ${sessionId} completed successfully`);
 
         } catch (error) {
-            console.error('❌ Enhanced analysis error:', error.message);
+            console.error('Enhanced analysis error:', error.message);
             
             // Provide fallback results
             const fallbackResults = generateEnhancedFallbackResults(brandConfig, multiPlatformData);
@@ -607,7 +606,7 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
         }
 
     } catch (error) {
-        console.error(`❌ Analysis session ${sessionId} failed:`, error);
+        console.error(`Analysis session ${sessionId} failed:`, error);
         
         analysisManager.updateSession(sessionId, {
             status: 'error',
@@ -644,7 +643,7 @@ function calculateEnhancedKeyMetrics(sentimentResults, multiPlatformData, totalM
         }
     });
     
-    console.log(`📊 Processing ${allMentions.length} total mention entries (from multiPlatformData)`);
+    console.log(`Processing ${allMentions.length} total mention entries (from multiPlatformData)`);
     
     if (allMentions.length === 0) {
         console.log('⚠️ No mention data found, using defaults');
@@ -688,8 +687,8 @@ function calculateEnhancedKeyMetrics(sentimentResults, multiPlatformData, totalM
     else if (brandHealthScore >= 2) riskLevel = 'high';
     else riskLevel = 'very_high';
     
-    console.log(`📊 Final metrics: ${overallSentiment} sentiment, ${brandHealthScore}/10 health, ${riskLevel} risk`);
-    console.log(`📊 Distribution: ${sentimentDistribution.positive}% pos, ${sentimentDistribution.negative}% neg, ${sentimentDistribution.neutral}% neutral`);
+    console.log(`Final metrics: ${overallSentiment} sentiment, ${brandHealthScore}/10 health, ${riskLevel} risk`);
+    console.log(`Distribution: ${sentimentDistribution.positive}% pos, ${sentimentDistribution.negative}% neg, ${sentimentDistribution.neutral}% neutral`);
     
     return {
         overall_sentiment: formatSentimentLabel(overallSentiment),
@@ -703,37 +702,16 @@ function calculateEnhancedKeyMetrics(sentimentResults, multiPlatformData, totalM
 }
 
 function generateEnhancedStrategicInsights(brandConfig, sentimentResults, keyMetrics, totalMentions) {
-    // Extract insights from sentiment data
-    const positiveDrivers = [
-        'Strong community engagement',
-        'Quality content appreciation',
-        'Character development praise'
-    ];
-    
-    const negativeDrivers = [
-        'Some pacing concerns noted',
-        'Minor confusion about plot elements'
-    ];
-    
-    const recommendations = [
-        'Continue monitoring sentiment trends across platforms',
-        'Engage actively with community feedback',
-        'Address any recurring concerns in user comments'
-    ];
-    
-    if (keyMetrics.brand_health_score >= 7) {
-        recommendations.unshift('Leverage positive sentiment for community building');
-    } else {
-        recommendations.unshift('Focus on addressing primary concerns in user feedback');
-    }
+    // Analyze actual sentiment data to generate dynamic insights
+    const insights = analyzeSentimentDataForInsights(sentimentResults, keyMetrics, totalMentions);
     
     return {
         health_reasoning: `Brand health score of ${keyMetrics.brand_health_score}/10 calculated from ${totalMentions} mentions across ${keyMetrics.platform_coverage} platforms, with ${keyMetrics.sentiment_distribution.positive}% positive sentiment.`,
         sentiment_drivers: {
-            positive: positiveDrivers,
-            negative: negativeDrivers
+            positive: insights.positiveDrivers,
+            negative: insights.negativeDrivers
         },
-        recommendations: recommendations,
+        recommendations: insights.recommendations,
         opportunity_analysis: {
             growth_potential: keyMetrics.brand_health_score >= 6 ? 'high' : 'moderate',
             key_platforms: Object.entries(sentimentResults)
@@ -745,8 +723,140 @@ function generateEnhancedStrategicInsights(brandConfig, sentimentResults, keyMet
     };
 }
 
+function analyzeSentimentDataForInsights(sentimentResults, keyMetrics, totalMentions) {
+    const positiveDrivers = [];
+    const negativeDrivers = [];
+    const recommendations = [];
+    
+    // Analyze sentiment distribution patterns
+    const sentimentDistribution = keyMetrics.sentiment_distribution;
+    const brandHealthScore = keyMetrics.brand_health_score;
+    
+    // Generate positive drivers based on actual sentiment data
+    if (sentimentDistribution.positive > 60) {
+        positiveDrivers.push('Strong positive sentiment across all platforms');
+        positiveDrivers.push('High community satisfaction and engagement');
+    } else if (sentimentDistribution.positive > 40) {
+        positiveDrivers.push('Moderate positive sentiment with room for growth');
+        positiveDrivers.push('Generally positive community reception');
+    }
+    
+    if (sentimentDistribution.positive > sentimentDistribution.negative) {
+        positiveDrivers.push('Positive sentiment outweighs negative feedback');
+    }
+    
+    // Generate negative drivers based on actual sentiment data
+    if (sentimentDistribution.negative > 30) {
+        negativeDrivers.push('Significant negative sentiment requires attention');
+        if (sentimentDistribution.negative > 50) {
+            negativeDrivers.push('High negative sentiment indicates urgent issues');
+        }
+    } else if (sentimentDistribution.negative > 15) {
+        negativeDrivers.push('Some negative feedback that should be monitored');
+    }
+    
+    if (sentimentDistribution.neutral > 50) {
+        negativeDrivers.push('High neutral sentiment suggests limited engagement');
+    }
+    
+    // Analyze platform-specific patterns
+    const platformAnalysis = analyzePlatformPatterns(sentimentResults);
+    
+    // Add platform-specific insights
+    if (platformAnalysis.bestPlatform) {
+        positiveDrivers.push(`Strong performance on ${platformAnalysis.bestPlatform}`);
+    }
+    
+    if (platformAnalysis.worstPlatform) {
+        negativeDrivers.push(`Needs improvement on ${platformAnalysis.worstPlatform}`);
+    }
+    
+    // Generate recommendations based on actual data
+    if (brandHealthScore >= 8) {
+        recommendations.push('Excellent brand health - leverage positive sentiment for growth');
+        recommendations.push('Maintain current strategies and community engagement');
+        recommendations.push('Consider expanding to additional platforms');
+    } else if (brandHealthScore >= 6) {
+        recommendations.push('Good brand health - focus on addressing remaining concerns');
+        recommendations.push('Increase engagement on underperforming platforms');
+        recommendations.push('Monitor sentiment trends closely');
+    } else if (brandHealthScore >= 4) {
+        recommendations.push('Moderate brand health - prioritize addressing negative feedback');
+        recommendations.push('Develop targeted engagement strategies');
+        recommendations.push('Consider crisis management if negative sentiment persists');
+    } else {
+        recommendations.push('Critical brand health - immediate action required');
+        recommendations.push('Implement comprehensive reputation management');
+        recommendations.push('Address root causes of negative sentiment urgently');
+    }
+    
+    // Add data-driven recommendations
+    if (totalMentions < 10) {
+        recommendations.push('Limited data available - consider expanding data collection');
+    } else if (totalMentions > 100) {
+        recommendations.push('Rich data set provides strong foundation for insights');
+    }
+    
+    if (Object.keys(sentimentResults).length < 3) {
+        recommendations.push('Consider expanding to additional platforms for broader insights');
+    }
+    
+    // Add engagement-based recommendations
+    if (platformAnalysis.hasHighEngagement) {
+        recommendations.push('High engagement levels - capitalize on community enthusiasm');
+    } else {
+        recommendations.push('Focus on increasing community engagement and participation');
+    }
+    
+    return {
+        positiveDrivers: positiveDrivers.length > 0 ? positiveDrivers : ['Community engagement detected'],
+        negativeDrivers: negativeDrivers.length > 0 ? negativeDrivers : ['Some areas for improvement identified'],
+        recommendations: recommendations
+    };
+}
+
+function analyzePlatformPatterns(sentimentResults) {
+    const platformScores = {};
+    let bestPlatform = null;
+    let worstPlatform = null;
+    let hasHighEngagement = false;
+    
+    Object.entries(sentimentResults).forEach(([platform, data]) => {
+        if (!data.aggregated_sentiment) return;
+        
+        // Calculate platform score based on sentiment and engagement
+        let sentimentScore = 0;
+        if (data.aggregated_sentiment.label === 'positive') sentimentScore = 1;
+        else if (data.aggregated_sentiment.label === 'negative') sentimentScore = -1;
+        const engagementScore = data.total_mentions > 20 ? 0.5 : 
+                               data.total_mentions > 10 ? 0.3 : 0;
+        
+        platformScores[platform] = sentimentScore + engagementScore;
+        
+        // Track engagement levels
+        if (data.total_mentions > 30) {
+            hasHighEngagement = true;
+        }
+    });
+    
+    // Find best and worst platforms
+    const sortedPlatforms = Object.entries(platformScores)
+        .sort((a, b) => b[1] - a[1]);
+    if (sortedPlatforms.length > 0) {
+        bestPlatform = sortedPlatforms[0][0];
+        worstPlatform = sortedPlatforms[sortedPlatforms.length - 1][0];
+    }
+    
+    return {
+        bestPlatform,
+        worstPlatform,
+        hasHighEngagement,
+        platformScores
+    };
+}
+
 async function generatePlatformSummaries(multiPlatformData, sentimentResults, brandConfig) {
-    console.log('📝 Generating detailed platform summaries with quotes...');
+    console.log('Generating detailed platform summaries with quotes...');
     // Use the DetailedPlatformSummaryGenerator for enhanced summaries with quotes
     try {
         const detailedSummaries = await summaryGenerator.generateDetailedPlatformSummaries(
@@ -767,10 +877,10 @@ async function generatePlatformSummaries(multiPlatformData, sentimentResults, br
                 overall_sentiment: formatSentimentLabel(summary.overall_sentiment)
             };
         });
-        console.log('✅ Enhanced platform summaries with quotes generated');
+        console.log('Enhanced platform summaries with quotes generated');
         return enhancedSummaries;
     } catch (error) {
-        console.error('❌ Error generating detailed summaries, using fallback:', error.message);
+        console.error('Error generating detailed summaries, using fallback:', error.message);
         // Fallback to basic summaries if DetailedPlatformSummaryGenerator fails
         return generateBasicPlatformSummaries(multiPlatformData, sentimentResults, brandConfig);
     }
@@ -847,32 +957,32 @@ function generateEnhancedTwitterMockData(brandConfig, count) {
     const tweets = [];
     const sentiments = ['positive', 'negative', 'neutral'];
     
-    // Real-style Twitter usernames
+    // Mock Twitter usernames for test data
     const twitterUsernames = [
-        'WebtoonWatcher', 'HorrorComic_Fan', 'SBG_Theorist', 'AshlynnSupporter', 'AidenBestBoy',
-        'TylerDefender', 'BenClarkFan', 'LoganAppreciator', 'TaylorLover', 'PhantomExpert',
-        'GraveyardTheory', 'WebtoonCritic', 'ComicAnalyst', 'ManhwaReader', 'HorrorAddict',
-        'ThrillerFan2024', 'SuspenseJunkie', 'CharacterDev', 'PlotTwistLover', 'EpisodeReacts',
-        'ChapterThoughts', 'ArtStyleFan', 'StorytellingPro', 'EmotionalDamage', 'PacingDebate',
-        'WorldBuilding101', 'DialogueMaster', 'VisualNarrative', 'WebcomicLife', 'SeriesObsessed'
+        'TwitterUser01', 'TwitterUser02', 'TwitterUser03', 'TwitterUser04', 'TwitterUser05',
+        'TwitterUser06', 'TwitterUser07', 'TwitterUser08', 'TwitterUser09', 'TwitterUser10',
+        'TwitterUser11', 'TwitterUser12', 'TwitterUser13', 'TwitterUser14', 'TwitterUser15',
+        'TwitterUser16', 'TwitterUser17', 'TwitterUser18', 'TwitterUser19', 'TwitterUser20',
+        'TwitterUser21', 'TwitterUser22', 'TwitterUser23', 'TwitterUser24', 'TwitterUser25',
+        'TwitterUser26', 'TwitterUser27', 'TwitterUser28', 'TwitterUser29', 'TwitterUser30'
     ];
     
     const tweetTemplates = [
-        `Just caught up with ${brandConfig.name} and WOW! The plot twists are insane 🤯 #webtoon`,
-        `Reading ${brandConfig.name} before bed was a mistake... now I can't sleep! 😱`,
-        `Anyone else think ${brandConfig.name} has been getting better each episode? The character development 👌`,
-        `${brandConfig.name} latest episode had me crying... why do they do this to us? 😭`,
-        `The art in ${brandConfig.name} is absolutely stunning. Props to the artist! 🎨`,
-        `Can we talk about how good the writing in ${brandConfig.name} is? Like seriously incredible`,
-        `${brandConfig.name} is giving me anxiety but I can't stop reading it lol`,
-        `New ${brandConfig.name} episode dropped and I'm not okay 😵`,
-        `${brandConfig.name} really said "let's traumatize these kids" and I'm here for it`,
-        `The way ${brandConfig.name} balances horror and character development is *chef's kiss*`,
-        `${brandConfig.name} has ruined my sleep schedule but worth it 100%`,
-        `Still thinking about that ${brandConfig.name} episode from last week... haunting`,
-        `${brandConfig.name} characters deserve better but also the story is so good`,
-        `Reading ${brandConfig.name} at 3am hits different 👻`,
-        `${brandConfig.name} really knows how to build suspense, I'm hooked`
+        `Just tried ${brandConfig.name} and WOW! The quality is insane 🤯 #recommended`,
+        `Using ${brandConfig.name} before bed was a game changer... now I can't sleep without it!`,
+        `Anyone else think ${brandConfig.name} has been getting better? The improvements are great`,
+        `${brandConfig.name} latest update had me impressed... why do they do this to us?`,
+        `The design in ${brandConfig.name} is absolutely stunning. Props to the team!`,
+        `Can we talk about how good the service at ${brandConfig.name} is? Like seriously incredible`,
+        `${brandConfig.name} is giving me anxiety but I can't stop using it lol`,
+        `New ${brandConfig.name} product dropped and I'm not okay`,
+        `${brandConfig.name} really said "let's impress these customers and I'm here for it`,
+        `The way ${brandConfig.name} balances quality and price is *chefs kiss*`,
+        `${brandConfig.name} has ruined my budget but worth it 100%`,
+        `Still thinking about that ${brandConfig.name} experience from last week... amazing`,
+        `${brandConfig.name} products deserve better but also the quality is so good`,
+        `Using ${brandConfig.name} at 3 hits different`,
+        `${brandConfig.name} really knows how to build customer loyalty, Im hooked`
     ];
     
     for (let i = 0; i < count; i++) {
@@ -904,35 +1014,35 @@ function generateEnhancedTwitterMockData(brandConfig, count) {
 function generateEnhancedRedditMockData(brandConfig, count) {
     const posts = [];
     const sentiments = ['positive', 'negative', 'neutral'];
-    const subreddits = ['webtoons', 'comics', 'horror', 'manhwa', 'webcomics'];
+    const subreddits = ['reviews', 'products', 'brands', 'shopping', 'recommendations'];
     const postTypes = ['discussion', 'fanart', 'theory', 'review', 'question'];
     
     // Real-style Reddit usernames
     const redditUsernames = [
-        'WebtoonAddict47', 'HorrorFan2023', 'ComicBookNerd', 'ManhwaLover', 'RedditUser92',
-        'SBGFanatic', 'GraveyardReader', 'PhantomDimension', 'AshlynnFan', 'AidenClark',
-        'TylerHernandez', 'BenClark2024', 'LoganFields', 'TaylorSibling', 'WebcomicCritic',
-        'ThrillerEnthusiast', 'SuspenseReader', 'HorrorComicFan', 'CharacterAnalyst', 'PlotTheorist',
-        'EpisodeReviewer', 'ChapterDiscussion', 'ArtAppreciator', 'StoryAnalyzer', 'EmotionalReader',
-        'PacingCritic', 'WorldBuildingFan', 'DialogueExpert', 'VisualStoryteller', 'NarrativeGuru'
+        'RedditUser01', 'RedditUser02', 'RedditUser03', 'RedditUser04', 'RedditUser05',
+        'RedditUser06', 'RedditUser07', 'RedditUser08', 'RedditUser09', 'RedditUser10',
+        'RedditUser11', 'RedditUser12', 'RedditUser13', 'RedditUser14', 'RedditUser15',
+        'RedditUser16', 'RedditUser17', 'RedditUser18', 'RedditUser19', 'RedditUser20',
+        'RedditUser21', 'RedditUser22', 'RedditUser23', 'RedditUser24', 'RedditUser25',
+        'RedditUser26', 'RedditUser27', 'RedditUser28', 'RedditUser29', 'RedditUser30'
     ];
     
     const postTemplates = [
-        `Just finished binge reading ${brandConfig.name} and I need to talk about it`,
-        `${brandConfig.name} character analysis - why [spoiler] is so well written`,
-        `Can we appreciate the art evolution in ${brandConfig.name}?`,
-        `${brandConfig.name} theory: What if the phantom dimension is actually...`,
-        `Unpopular opinion: ${brandConfig.name} is the best horror webtoon right now`,
-        `${brandConfig.name} gives me such anxiety but I can't stop reading`,
-        `The psychological horror in ${brandConfig.name} is top tier`,
-        `${brandConfig.name} discussion: favorite character and why?`,
-        `${brandConfig.name} latest episode broke me emotionally`,
+        `Just finished trying ${brandConfig.name} and I need to talk about it`,
+        `${brandConfig.name} product review - why the quality is so well designed`,
+        `Can we appreciate the innovation in ${brandConfig.name}?`,
+        `${brandConfig.name} theory: What if the customer service is actually...`,
+        `Unpopular opinion: ${brandConfig.name} is the best in its category right now`,
+        `${brandConfig.name} gives me such excitement but I can't stop using it`,
+        `The customer experience at ${brandConfig.name} is top tier`,
+        `${brandConfig.name} discussion: favorite product and why?`,
+        `${brandConfig.name} latest release broke my expectations`,
         `Why ${brandConfig.name} deserves more recognition`,
-        `${brandConfig.name} fan art I made - hope you like it!`,
-        `${brandConfig.name} episode predictions - what's coming next?`,
-        `The way ${brandConfig.name} handles trauma is so realistic`,
-        `${brandConfig.name} soundtrack recommendations?`,
-        `${brandConfig.name} vs other horror webtoons - comparison`
+        `${brandConfig.name} fan review I made - hope you like it!`,
+        `${brandConfig.name} product predictions - whats coming next?`,
+        `The way ${brandConfig.name} handles customer feedback is so realistic`,
+        `${brandConfig.name} recommendations?`,
+        `${brandConfig.name} vs other brands - comparison`
     ];
     
     for (let i = 0; i < count; i++) {
@@ -1086,28 +1196,22 @@ function removeDuplicateQuotes(quotes) {
 function analyzeContentThemes(mentions, brandConfig) {
     const allText = mentions.map(m => m.content.toLowerCase()).join(' ');
     
-    // Character-specific themes for School Bus Graveyard
-    const characterThemes = {
-        'aiden': countMentions(allText, ['aiden', 'clark']),
-        'ashlyn': countMentions(allText, ['ashlyn', 'banner']),
-        'tyler': countMentions(allText, ['tyler', 'hernandez']),
-        'taylor': countMentions(allText, ['taylor', 'hernandez']),
-        'ben': countMentions(allText, ['ben', 'clark']),
-        'logan': countMentions(allText, ['logan', 'fields'])
-    };
-    
-    // Content themes
+    // Generic content themes that work for any brand/category
     const contentThemes = {
-        'art_style': countMentions(allText, ['art', 'artwork', 'drawing', 'illustration', 'animation']),
-        'story_plot': countMentions(allText, ['story', 'plot', 'narrative', 'storyline', 'chapter']),
-        'suspense_horror': countMentions(allText, ['scary', 'horror', 'suspense', 'thriller', 'creepy', 'phantom']),
-        'character_development': countMentions(allText, ['character', 'development', 'personality', 'growth']),
-        'emotional_impact': countMentions(allText, ['emotional', 'feelings', 'cry', 'tears', 'heart'])
+        'quality': countMentions(allText, ['quality', 'good', 'bad', 'excellent', 'poor', 'amazing', 'terrible']),
+        'service': countMentions(allText, ['service', 'customer', 'support', 'help', 'assistance', 'care']),
+        'product': countMentions(allText, ['product', 'item', 'goods', 'merchandise', 'stuff', 'thing']),
+        'price': countMentions(allText, ['price', 'cost', 'expensive', 'cheap', 'affordable', 'value', 'worth']),
+        'experience': countMentions(allText, ['experience', 'feel', 'felt', 'tried', 'used', 'bought', 'chased']),
+        'recommendation': countMentions(allText, ['recommend', 'suggest', 'advise', 'should', 'would', 'will']),
+        'comparison': countMentions(allText, ['better', 'worse', 'compared', 'versus', 'instead', 'than']),
+        'innovation': countMentions(allText, ['new', 'vative', 'creative', 'unique', 'different', 'original']),
+        'reliability': countMentions(allText, ['reliable', 'trustworthy', 'able', 'consistent', 'stable']),
+        'convenience': countMentions(allText, ['convenient', 'easy', 'simple', 'quick', 'fast', 'slow', 'difficult'])
     };
     
     // Extract top themes
-    const allThemes = { ...characterThemes, ...contentThemes };
-    const topThemes = Object.entries(allThemes)
+    const topThemes = Object.entries(contentThemes)
         .filter(([theme, count]) => count > 0)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
@@ -1119,11 +1223,11 @@ function analyzeContentThemes(mentions, brandConfig) {
     return {
         themes: topThemes,
         topics: topics,
-        character_focus: Object.entries(characterThemes)
-            .filter(([char, count]) => count > 0)
+        content_focus: Object.entries(contentThemes)
+            .filter(([theme, count]) => count > 0)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
-            .map(([char]) => char)
+            .map(([theme]) => theme)
     };
 }
 
@@ -1180,27 +1284,27 @@ function getPlatformSpecificContext(platform, mentions, quotes) {
     switch (platform) {
         case 'youtube':
             const avgLikes = mentions.reduce((sum, m) => sum + (m.engagement_score || 0), 0) / mentions.length;
-            return `YouTube viewers are actively engaging with an average of ${Math.round(avgLikes)} likes per comment, indicating strong audience investment in the content.`;
+            return `YouTube viewers are actively engaging with an average of ${Math.round(avgLikes)} likes per comment, indicating strong audience investment.`;
             
         case 'twitter':
             const hasRetweets = mentions.some(m => (m.retweets || 0) > 5);
             return hasRetweets ? 
-                'Twitter discussions show viral potential with significant retweet activity spreading the conversation.' :
-                'Twitter conversations remain focused with consistent engagement from the fan community.';
+                'Twitter discussions show viral potential with significant retweet activity.' :
+                'Twitter conversations remain focused with consistent engagement from the community.';
                 
         case 'reddit':
             const subreddits = [...new Set(mentions.map(m => m.subreddit).filter(s => s))];
             return subreddits.length > 1 ? 
                 `Reddit discussions span multiple communities including r/${subreddits.slice(0, 2).join(', r/')}, showing broad appeal.` :
-                `Reddit activity is concentrated in r/${subreddits[0] || 'webtoons'} with active community participation and detailed discussions.`;
+                `Reddit activity is concentrated in r/${subreddits[0] || 'general'} with active community participation.`;
                 
         case 'quora':
             const questions = mentions.filter(m => m.type === 'question').length;
             const answers = mentions.filter(m => m.type === 'answer').length;
-            return `Quora shows ${questions} questions and ${answers} answers, indicating both curiosity and knowledge sharing about the series among readers.`;
+            return `Quora shows ${questions} questions and ${answers} answers, indicating both curiosity and knowledge sharing about the topic.`;
             
         default:
-            return 'Community engagement shows consistent interest and active participation across discussions.';
+            return 'Community engagement shows consistent interest and active participation.';
     }
 }
 
@@ -1231,7 +1335,7 @@ function calculateSentimentDistribution(sentiments) {
     const negative = Math.round((counts.negative / total) * 100);
     const neutral = 100 - positive - negative; // Ensure total = 100
     
-    console.log(`📊 Sentiment Distribution: ${positive}% positive, ${negative}% negative, ${neutral}% neutral (from ${total} total sentiments)`);
+    console.log(`Sentiment Distribution: ${positive}% positive, ${negative}% negative, ${neutral}% neutral (from ${total} total sentiments)`);
     
     return { positive, negative, neutral };
 }
@@ -1343,10 +1447,10 @@ app.use((error, req, res, next) => {
 
 // Start server
 app.listen(port, () => {
-    console.log(`🚀 Sentiment Analysis Dashboard running on port ${port}`);
-    console.log(`📊 Dashboard: http://localhost:${port}`);
-    console.log(`🔗 WebSocket: ws://localhost:8080`);
-    console.log(`🏥 Health check: http://localhost:${port}/api/health`);
+    console.log(`Sentiment Analysis Dashboard running on port ${port}`);
+    console.log(`Dashboard: http://localhost:${port}`);
+    console.log(`WebSocket: ws://localhost:8080`);
+    console.log(`Health check: http://localhost:${port}/api/health`);
 });
 
 // Graceful shutdown

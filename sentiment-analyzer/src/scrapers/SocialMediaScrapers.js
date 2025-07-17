@@ -7,7 +7,7 @@ class RedditScraper {
     }
     
     async scrapeBrandSentiment(brandConfig) {
-        console.log(`🔍 Reddit: Searching for "${brandConfig.name}"...`);
+        console.log(`Reddit: Searching for "${brandConfig.name}"...`);
         
         // Simplified Reddit scraping for now
         // You can replace this with the official API version later
@@ -42,7 +42,7 @@ class RedditScraper {
             }
         ];
         
-        console.log(`✅ Reddit: Generated ${mockData.length} mock posts for testing`);
+        console.log(`Reddit: Generated ${mockData.length} mock posts for testing`);
         return mockData;
     }
     
@@ -57,14 +57,14 @@ class TwitterScraper {
     }
     
     async scrapeBrandSentiment(brandConfig) {
-        console.log(`🐦 Twitter: Searching for "${brandConfig.name}"...`);
+        console.log(`Twitter: Searching for "${brandConfig.name}"...`);
         
         // Check if we have Twitter API credentials
         if (process.env.TWITTER_BEARER_TOKEN) {
-            console.log('🔑 Twitter API token found - using API method');
+            console.log('Twitter API token found - using API method');
             return await this.scrapeWithTwitterAPI(brandConfig);
         } else {
-            console.log('📝 No Twitter API token - using mock data');
+            console.log('No Twitter API token - using mock data');
             return await this.generateMockTwitterData(brandConfig);
         }
     }
@@ -114,12 +114,12 @@ class TwitterScraper {
                 });
             }
             
-            console.log(`✅ Twitter API: Found ${tweets.length} tweets`);
+            console.log(`Twitter API: Found ${tweets.length} tweets`);
             return tweets;
             
         } catch (error) {
-            console.error('❌ Twitter API error:', error.message);
-            console.log('📝 Falling back to mock data...');
+            console.error('Twitter API error:', error.message);
+            console.log('Falling back to mock data...');
             return await this.generateMockTwitterData(brandConfig);
         }
     }
@@ -142,7 +142,7 @@ class TwitterScraper {
             {
                 id: `twitter_mock_2`,
                 platform: 'twitter',
-                content: `Reading ${brandConfig.name} before bed was a mistake... now I can't sleep! 😱`,
+                content: `Reading ${brandConfig.name} before bed was a mistake... now I can't sleep!`,
                 author: 'twitter_user2',
                 created_at: new Date(Date.now() - 172800000).toISOString(),
                 engagement_score: 8,
@@ -155,7 +155,7 @@ class TwitterScraper {
             {
                 id: `twitter_mock_3`,
                 platform: 'twitter',
-                content: `Anyone else think ${brandConfig.name} has been getting better each episode? The character development 👌`,
+                content: `Anyone else think ${brandConfig.name} has been getting better each episode? The character development is great`,
                 author: 'twitter_user3',
                 created_at: new Date(Date.now() - 259200000).toISOString(),
                 engagement_score: 12,
@@ -167,7 +167,7 @@ class TwitterScraper {
             }
         ];
         
-        console.log(`✅ Twitter: Generated ${mockTweets.length} mock tweets for testing`);
+        console.log(`Twitter: Generated ${mockTweets.length} mock tweets for testing`);
         return mockTweets;
     }
     

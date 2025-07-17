@@ -13,7 +13,7 @@ class QuoraChromeScraper {
     }
     
     async initialize() {
-        console.log('🔗 Connecting to Chrome session for Quora scraping...');
+        console.log('Connecting to Chrome session for Quora scraping...');
         
         try {
             // Connect to existing Chrome instance
@@ -26,18 +26,18 @@ class QuoraChromeScraper {
             this.page = await this.browser.newPage();
             this.isConnected = true;
             
-            console.log('✅ Connected to Chrome browser');
+            console.log('Connected to Chrome browser');
             return true;
             
         } catch (error) {
-            console.error('❌ Failed to connect to Chrome:', error.message);
-            console.log('💡 Make sure Chrome is running with: node persistent-chrome-setup.js');
+            console.error('Failed to connect to Chrome:', error.message);
+            console.log('Make sure Chrome is running with: node persistent-chrome-setup.js');
             return false;
         }
     }
     
     async verifyLogin() {
-        console.log('🔍 Verifying Quora login status...');
+        console.log('Verifying Quora login status...');
         
         try {
             await this.page.goto('https://www.quora.com', { waitUntil: 'networkidle2' });
@@ -53,21 +53,21 @@ class QuoraChromeScraper {
             });
             
             if (loginStatus.isLoggedIn) {
-                console.log('✅ Logged in to Quora');
+                console.log('Logged in to Quora');
                 return true;
             } else {
-                console.log('❌ Not logged in to Quora');
+                console.log('Not logged in to Quora');
                 return false;
             }
             
         } catch (error) {
-            console.error('❌ Login verification failed:', error.message);
+            console.error('Login verification failed:', error.message);
             return false;
         }
     }
     
     async searchBrandDiscussions(brandConfig, limit = 20) {
-        console.log(`🔍 Searching Quora for: ${brandConfig.name}`);
+        console.log(`Searching Quora for: ${brandConfig.name}`);
         
         if (!this.isConnected) {
             throw new Error('Not connected to Chrome. Call initialize() first.');
@@ -78,7 +78,7 @@ class QuoraChromeScraper {
         
         for (const query of searchQueries.slice(0, 3)) { // Limit to 3 queries
             try {
-                console.log(`   🔍 Query: "${query}"`);
+                console.log(`   Query: "${query}"`);
                 
                 const discussions = await this.searchQuery(query, brandConfig);
                 allDiscussions.push(...discussions);
@@ -89,7 +89,7 @@ class QuoraChromeScraper {
                 await new Promise(resolve => setTimeout(resolve, 4000));
                 
             } catch (error) {
-                console.error(`❌ Error searching "${query}":`, error.message);
+                console.error(`Error searching "${query}":`, error.message);
             }
         }
         
@@ -97,7 +97,7 @@ class QuoraChromeScraper {
         const uniqueDiscussions = this.deduplicateDiscussions(allDiscussions);
         const rankedDiscussions = this.rankDiscussions(uniqueDiscussions, brandConfig);
         
-        console.log(`✅ Total unique discussions found: ${rankedDiscussions.length}`);
+        console.log(`Total unique discussions found: ${rankedDiscussions.length}`);
         return rankedDiscussions.slice(0, limit);
     }
     
@@ -162,7 +162,7 @@ class QuoraChromeScraper {
             return discussions;
             
         } catch (error) {
-            console.error(`❌ Search error for "${query}":`, error.message);
+            console.error(`Search error for "${query}":`, error.message);
             return [];
         }
     }
@@ -189,7 +189,7 @@ class QuoraChromeScraper {
     }
     
     async extractDiscussions(brandConfig, searchQuery) {
-        console.log('📄 Extracting discussions from page...');
+        console.log('Extracting discussions from page...');
         
         const discussions = await this.page.evaluate((brandName, searchQuery) => {
             const results = [];
@@ -430,7 +430,7 @@ class QuoraChromeScraper {
                 await this.browser.disconnect(); // Don't close, just disconnect
             }
             this.isConnected = false;
-            console.log('🔗 Disconnected from Chrome (Chrome stays open)');
+            console.log('Disconnected from Chrome (Chrome stays open)');
         } catch (error) {
             console.log('⚠️  Disconnect error:', error.message);
         }
@@ -449,7 +449,7 @@ class QuoraChromeScraper {
             // Search for discussions
             const discussions = await this.searchBrandDiscussions(brandConfig, 20);
             
-            console.log(`\n📊 Quora scraping results for ${brandConfig.name}:`);
+            console.log(`\nQuora scraping results for ${brandConfig.name}:`);
             console.log(`   Total discussions: ${discussions.length}`);
             
             if (discussions.length > 0) {
@@ -466,7 +466,7 @@ class QuoraChromeScraper {
             return discussions;
             
         } catch (error) {
-            console.error('❌ Quora scraping error:', error.message);
+            console.error('Quora scraping error:', error.message);
             return [];
         }
     }

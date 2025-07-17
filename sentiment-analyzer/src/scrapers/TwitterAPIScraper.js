@@ -7,10 +7,10 @@ class TwitterAPIScraper {
     }
     
     async scrapeBrandSentiment(brandConfig) {
-        console.log(`🐦 Twitter API: Searching for "${brandConfig.name}"...`);
+        console.log(`Twitter API: Searching for "${brandConfig.name}"...`);
         
         if (!process.env.TWITTER_BEARER_TOKEN) {
-            console.error('❌ Twitter Bearer Token not found in environment variables');
+            console.error('Twitter Bearer Token not found in environment variables');
             return [];
         }
         
@@ -32,11 +32,11 @@ class TwitterAPIScraper {
             const uniqueTweets = this.removeDuplicates(enrichedTweets);
             const relevantTweets = this.filterRelevantTweets(uniqueTweets, brandConfig);
             
-            console.log(`✅ Twitter API: Found ${relevantTweets.length} relevant tweets`);
+            console.log(`Twitter API: Found ${relevantTweets.length} relevant tweets`);
             return relevantTweets;
             
         } catch (error) {
-            console.error('❌ Twitter API scraping failed:', error.message);
+            console.error('Twitter API scraping failed:', error.message);
             return [];
         }
     }
@@ -115,7 +115,7 @@ class TwitterAPIScraper {
                 }
                 
             } catch (error) {
-                console.error(`❌ Keyword search error for "${keyword}":`, error.message);
+                console.error(`Keyword search error for "${keyword}":`, error.message);
             }
         }
         
@@ -138,7 +138,7 @@ class TwitterAPIScraper {
                 enrichedTweets.push(...replies);
                 
             } catch (error) {
-                console.error(`❌ Conversation error for tweet ${tweet.twitter_id}:`, error.message);
+                console.error(`Conversation error for tweet ${tweet.twitter_id}:`, error.message);
             }
         }
         
@@ -172,7 +172,7 @@ class TwitterAPIScraper {
             }
             
         } catch (error) {
-            console.error(`❌ Replies fetch error:`, error.message);
+            console.error(`Replies fetch error:`, error.message);
         }
         
         return replies;

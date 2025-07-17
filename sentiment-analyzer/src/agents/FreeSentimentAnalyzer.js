@@ -11,9 +11,9 @@ class FreeSentimentAnalyzer {
             google: { used: 0, limit: 5000 }    // 5,000 units/month free
         };
         
-        console.log('🆓 Free Sentiment Analyzer initialized');
-        console.log('✅ Primary: Advanced Basic Sentiment (100% reliable)');
-        console.log('✅ Backups: Twinword, TextRazor, Google NLP');
+        console.log('Free Sentiment Analyzer initialized');
+        console.log('Primary: Advanced Basic Sentiment (100% reliable)');
+        console.log('Backups: Twinword, TextRazor, Google NLP');
     }
     
     async analyzeSentiment(text, platform = 'unknown') {
@@ -77,7 +77,7 @@ class FreeSentimentAnalyzer {
             } catch (error) {
                 console.log('⚠️ Google NLP failed');
             }
-        }TEXTRAZOR_API_KEY=
+        }
         
         throw new Error('All free APIs exhausted or failed');
     }
@@ -189,7 +189,7 @@ class FreeSentimentAnalyzer {
     }
     
     async analyzeBatch(texts, platform = 'unknown') {
-        console.log(`🔄 Analyzing ${texts.length} texts for ${platform} with free APIs...`);
+        console.log(`Analyzing ${texts.length} texts for ${platform} with free APIs...`);
         
         const results = [];
         const batchSize = 3; // Smaller batches for free APIs
@@ -210,7 +210,7 @@ class FreeSentimentAnalyzer {
             }
         }
         
-        console.log(`✅ Completed ${results.length} sentiment analyses (free APIs)`);
+        console.log(`Completed ${results.length} sentiment analyses (free APIs)`);
         return results;
     }
     
@@ -235,7 +235,7 @@ class FreeSentimentAnalyzer {
         // Call this at the beginning of each month
         this.apiQuotas.twinword.used = 0;
         this.apiQuotas.textrazor.used = 0;
-        console.log('🔄 Monthly API quotas reset');
+        console.log('Monthly API quotas reset');
     }
 }
 

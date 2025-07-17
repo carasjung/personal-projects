@@ -5,13 +5,13 @@ const SentimentOrchestrator = require('./SentimentOrchestrator');
 class EnhancedSentimentOrchestrator extends SentimentOrchestrator {
     constructor() {
         super();
-        console.log('🚀 Enhanced Sentiment Orchestrator fully initialized');
-        console.log('✅ Features: Hugging Face + Groq + Ollama + Multi-Platform');
+        console.log('Enhanced Sentiment Orchestrator fully initialized');
+        console.log('Features: Hugging Face + Groq + Ollama + Multi-Platform');
     }
     
     // Add the method that the server expects
     async runMultiPlatformAnalysis(brandConfig, multiPlatformData) {
-        console.log('🔗 Running multi-platform analysis...');
+        console.log('Running multi-platform analysis...');
         
         // Use the existing analyzeBrandSentiment method from the parent class
         try {
@@ -28,7 +28,7 @@ class EnhancedSentimentOrchestrator extends SentimentOrchestrator {
             };
             
         } catch (error) {
-            console.error('❌ Multi-platform analysis failed:', error.message);
+            console.error('Multi-platform analysis failed:', error.message);
             return this.generateFallbackAnalysis(brandConfig, multiPlatformData);
         }
     }
@@ -101,7 +101,7 @@ class EnhancedSentimentOrchestrator extends SentimentOrchestrator {
     }
     
     generateFallbackAnalysis(brandConfig, multiPlatformData) {
-        console.log('🔄 Generating fallback analysis...');
+        console.log('Generating fallback analysis...');
         
         const totalMentions = Object.values(multiPlatformData)
             .reduce((sum, mentions) => sum + mentions.length, 0);

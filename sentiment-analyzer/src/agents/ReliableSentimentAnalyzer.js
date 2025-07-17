@@ -14,9 +14,9 @@ class ReliableSentimentAnalyzer {
             openai: process.env.OPENAI_API_KEY
         };
         
-        console.log('🔧 Reliable Sentiment Analyzer initialized');
-        console.log('✅ Primary: Advanced Basic Sentiment (100% reliable)');
-        console.log('✅ Backup: TextRazor, MeaningCloud, OpenAI');
+        console.log('Reliable Sentiment Analyzer initialized');
+        console.log('Primary: Advanced Basic Sentiment (100% reliable)');
+        console.log('Backup: TextRazor, MeaningCloud, OpenAI');
     }
     
     async analyzeSentiment(text, platform = 'unknown') {
@@ -196,7 +196,7 @@ class ReliableSentimentAnalyzer {
     }
     
     async analyzeBatch(texts, platform = 'unknown') {
-        console.log(`🔄 Analyzing ${texts.length} texts for ${platform}...`);
+        console.log(`Analyzing ${texts.length} texts for ${platform}...`);
         
         const results = [];
         const batchSize = 5; // Process in small batches
@@ -217,7 +217,7 @@ class ReliableSentimentAnalyzer {
             }
         }
         
-        console.log(`✅ Completed ${results.length} sentiment analyses`);
+        console.log(`Completed ${results.length} sentiment analyses`);
         return results;
     }
     
