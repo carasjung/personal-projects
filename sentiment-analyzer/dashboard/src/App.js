@@ -1,4 +1,5 @@
 // dashboard/src/App.js - React Frontend for Sentiment Dashboard
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import html2canvas from 'html2canvas';
