@@ -1,10 +1,10 @@
 {
   "name": "sentiment-dashboard",
   "version": "1.0.0",
-  "private": true,
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1",
     "dompurify": "^3.0.0"
@@ -32,6 +32,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "http://localhost:3001"
+  }
 }
