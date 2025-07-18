@@ -66,62 +66,62 @@ const PlatformSummary = ({ platform, summary }) => (
   </div>
 );
 
-// Risk Level Legend Component
-const RiskLevelLegend = ({ show, onToggle }) => (
-  <div className="risk-legend-container">
-    <button 
-      onClick={onToggle}
-      className="legend-toggle"
-    >
-      {show ? 'Hide Risk Level Guide' : 'Show Risk Level Guide'}
-    </button>
-    {show && (
-      <div className="risk-legend">
-        <h4>Risk Level Guide</h4>
-        <div className="risk-levels">
-          <div className="risk-item very-low">
-            <div className="risk-color"></div>
-            <div className="risk-content">
-              <strong>Very Low Risk</strong>
-              <p>Excellent brand health (9-10/10). Overwhelming positive sentiment with minimal negative feedback. Brand is thriving with strong community support.</p>
-            </div>
-          </div>
-          <div className="risk-item low">
-            <div className="risk-color"></div>
-            <div className="risk-content">
-              <strong>Low Risk</strong>
-              <p>Strong brand health (7-8/10). Mostly positive sentiment with manageable negative feedback. Continue current strategies and monitor trends.</p>
-            </div>
-          </div>
-          <div className="risk-item medium">
-            <div className="risk-color"></div>
-            <div className="risk-content">
-              <strong>Medium Risk</strong>
-              <p>Moderate brand health (5-6/10). Mixed sentiment requires attention. Consider addressing common concerns and improving engagement strategies.</p>
-            </div>
-          </div>
-          <div className="risk-item high">
-            <div className="risk-color"></div>
-            <div className="risk-content">
-              <strong>High Risk</strong>
-              <p>Concerning brand health (3-4/10). Significant negative sentiment trends. Immediate action needed to address issues and improve perception.</p>
-            </div>
-          </div>
-          <div className="risk-item very-high">
-            <div className="risk-color"></div>
-            <div className="risk-content">
-              <strong>Very High Risk</strong>
-              <p>Critical brand health (1-2/10). Predominantly negative sentiment. Crisis management protocols should be activated immediately.</p>
-            </div>
-          </div>
-        </div>
-        <div className="legend-footer">
-          <p><strong>Note:</strong> Risk levels are calculated based on sentiment distribution, engagement patterns, and overall brand health score. Regular monitoring is recommended for all levels.</p>
-        </div>
-      </div>
-    )}
-  </div>
-);
+// Risk Level Legend Component - Commented out as unused
+// const RiskLevelLegend = ({ show, onToggle }) => (
+//   <div className="risk-legend-container">
+//     <button 
+//       onClick={onToggle}
+//       className="legend-toggle"
+//     >
+//       {show ? 'Hide Risk Level Guide' : 'Show Risk Level Guide'}
+//     </button>
+//     {show && (
+//       <div className="risk-legend">
+//         <h4>Risk Level Guide</h4>
+//         <div className="risk-levels">
+//           <div className="risk-item very-low">
+//             <div className="risk-color"></div>
+//             <div className="risk-content">
+//               <strong>Very Low Risk</strong>
+//               <p>Excellent brand health (9-10/10). Overwhelming positive sentiment with minimal negative feedback. Brand is thriving with strong community support.</p>
+//             </div>
+//           </div>
+//           <div className="risk-item low">
+//             <div className="risk-color"></div>
+//             <div className="risk-content">
+//               <strong>Low Risk</strong>
+//               <p>Strong brand health (7-8/10). Mostly positive sentiment with manageable negative feedback. Continue current strategies and monitor trends.</p>
+//             </div>
+//           </div>
+//           <div className="risk-item medium">
+//             <div className="risk-color"></div>
+//             <div className="risk-content">
+//               <strong>Medium Risk</strong>
+//               <p>Moderate brand health (5-6/10). Mixed sentiment requires attention. Consider addressing common concerns and improving engagement strategies.</p>
+//             </div>
+//           </div>
+//           <div className="risk-item high">
+//             <div className="risk-color"></div>
+//             <div className="risk-content">
+//               <strong>High Risk</strong>
+//               <p>Concerning brand health (3-4/10). Significant negative sentiment trends. Immediate action needed to address issues and improve perception.</p>
+//             </div>
+//           </div>
+//           <div className="risk-item very-high">
+//             <div className="risk-color"></div>
+//             <div className="risk-content">
+//               <strong>Very High Risk</strong>
+//               <p>Critical brand health (1-2/10). Predominantly negative sentiment. Crisis management protocols should be activated immediately.</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="legend-footer">
+//           <p><strong>Note:</strong> Risk levels are calculated based on sentiment distribution, engagement patterns, and overall brand health score. Regular monitoring is recommended for all levels.</p>
+//         </div>
+//       </div>
+//     )}
+//   </div>
+// );
 
 // Helper functions
 const getSentimentLabel = (sentiment) => {
@@ -140,10 +140,10 @@ const getSentimentColor = (sentiment) => {
 
 // Export Buttons Component
 const ExportButtons = ({ session }) => {
-  const analysisRef = React.useRef();
-  const platformSummariesRef = React.useRef();
-  const strategicInsightsRef = React.useRef();
-  const deepAnalysisRef = React.useRef();
+  // const analysisRef = React.useRef();
+  // const platformSummariesRef = React.useRef();
+  // const strategicInsightsRef = React.useRef();
+  // const deepAnalysisRef = React.useRef();
 
   if (!session || !session.data) return null;
   
@@ -235,7 +235,7 @@ const ExportButtons = ({ session }) => {
   const exportToPDF = async (session) => {
     const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+    // const pageHeight = pdf.internal.pageSize.getHeight();
 
     async function addSectionToPDF(node, addNewPage = false) {
       if (!node) return;
@@ -364,11 +364,11 @@ function App() {
   // State management
   const [activeSession, setActiveSession] = useState(null);
   const [sessions, setSessions] = useState([]);
-  const [ws, setWs] = useState(null);
+  // const [ws, setWs] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [showExplanations, setShowExplanations] = useState(false); // ADD THIS LINE
-  const [showRiskLegend, setShowRiskLegend] = useState(false);
+  // const [showRiskLegend, setShowRiskLegend] = useState(false);
   
   // Form state
   const [brandForm, setBrandForm] = useState({
