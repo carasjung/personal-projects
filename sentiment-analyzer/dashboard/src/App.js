@@ -364,7 +364,7 @@ function App() {
   // State management
   const [activeSession, setActiveSession] = useState(null);
   const [sessions, setSessions] = useState([]);
-  // const [ws, setWs] = useState(null);
+  const [ws, setWs] = useState(null);  // ← Add this back
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [showExplanations, setShowExplanations] = useState(false); // ADD THIS LINE
