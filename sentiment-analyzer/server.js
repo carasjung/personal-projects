@@ -14,11 +14,25 @@ const { AutomatedQuoraChromeScraper } = require('./src/utils/AutomatedChromeMana
 const HuggingFaceFirstSentimentAnalyzer = require('./src/agents/HuggingFaceFirstSentimentAnalyzer');
 const DetailedPlatformSummaryGenerator = require('./src/agents/DetailedPlatformSummaryGenerator');
 
+// Import monitoring utilities
+const ProductionMonitor = require('./src/utils/ProductionMonitor');
+const APIMonitor = require('./src/utils/APIMonitor');
+const RateLimiter = require('./src/utils/RateLimiter');
+const CacheManager = require('./src/utils/CacheManager');
+const ErrorHandler = require('./src/utils/ErrorHandler');
+
 const app = express();
 const port = process.env.PORT || 3001;
 
 const sentimentAnalyzer = new HuggingFaceFirstSentimentAnalyzer();
 const summaryGenerator = new DetailedPlatformSummaryGenerator();
+
+// Initialize production monitoring
+const productionMonitor = new ProductionMonitor();
+const apiMonitor = new APIMonitor();
+const rateLimiter = new RateLimiter();
+const cacheManager = new CacheManager();
+const errorHandler = new ErrorHandler();
 
 // Middleware
 app.use(cors());
@@ -1430,6 +1444,129 @@ function isStopWord(word) {
     ];
     return stopWords.includes(word.toLowerCase());
 }
+
+// Monitoring API Routes
+
+// Get system health status
+app.get('/api/monitoring/health', async (req, res) => {
+    try {
+        const health = await productionMonitor.getSystemHealth();
+        res.json(health);
+    } catch (error) {
+        console.error('Health check error:', error);
+        res.status(500).json({ error: 'Health check failed' });
+    }
+});
+
+// Get quick system status
+app.get('/api/monitoring/status', async (req, res) => {
+    try {
+        const status = await productionMonitor.getQuickStatus();
+        res.json(status);
+    } catch (error) {
+        console.error('Status check error:', error);
+        res.status(500).json({ error: 'Status check failed' });
+    }
+});
+
+// Get detailed production report
+app.get('/api/monitoring/report', async (req, res) => {
+    try {
+        const report = await productionMonitor.generateProductionReport();
+        res.json(report);
+    } catch (error) {
+        console.error('Report generation error:', error);
+        res.status(500).json({ error: 'Report generation failed' });
+    }
+});
+
+// Get API usage statistics
+app.get('/api/monitoring/api-usage', async (req, res) => {
+    try {
+        const usage = await apiMonitor.getUsageReport();
+        res.json(usage);
+    } catch (error) {
+        console.error('API usage error:', error);
+        res.status(500).json({ error: 'API usage check failed' });
+    }
+});
+
+// Get cost report
+app.get('/api/monitoring/costs', async (req, res) => {
+    try {
+        const costReport = await apiMonitor.generateCostReport();
+        res.json(costReport);
+    } catch (error) {
+        console.error('Cost report error:', error);
+        res.status(500).json({ error: 'Cost report generation failed' });
+    }
+});
+
+// Get cache statistics
+app.get('/api/monitoring/cache', async (req, res) => {
+    try {
+        const cacheStats = await cacheManager.getCacheStats();
+        res.json(cacheStats);
+    } catch (error) {
+        console.error('Cache stats error:', error);
+        res.status(500).json({ error: 'Cache stats failed' });
+    }
+});
+
+// Get error statistics
+app.get('/api/monitoring/errors', async (req, res) => {
+    try {
+        const errorStats = errorHandler.getErrorStats();
+        res.json(errorStats);
+    } catch (error) {
+        console.error('Error stats error:', error);
+        res.status(500).json({ error: 'Error stats failed' });
+    }
+});
+
+// Get rate limiting status
+app.get('/api/monitoring/rate-limits', async (req, res) => {
+    try {
+        const rateLimitStatus = rateLimiter.getRateLimitStatus();
+        res.json(rateLimitStatus);
+    } catch (error) {
+        console.error('Rate limit status error:', error);
+        res.status(500).json({ error: 'Rate limit status failed' });
+    }
+});
+
+// Clear cache
+app.post('/api/monitoring/cache/clear', async (req, res) => {
+    try {
+        await cacheManager.clearAll();
+        res.json({ message: 'Cache cleared successfully' });
+    } catch (error) {
+        console.error('Cache clear error:', error);
+        res.status(500).json({ error: 'Cache clear failed' });
+    }
+});
+
+// Clear error log
+app.post('/api/monitoring/errors/clear', async (req, res) => {
+    try {
+        await errorHandler.clearErrorLog();
+        res.json({ message: 'Error log cleared successfully' });
+    } catch (error) {
+        console.error('Error log clear error:', error);
+        res.status(500).json({ error: 'Error log clear failed' });
+    }
+});
+
+// Reset API usage
+app.post('/api/monitoring/api-usage/reset', async (req, res) => {
+    try {
+        apiMonitor.resetDailyUsage();
+        res.json({ message: 'API usage reset successfully' });
+    } catch (error) {
+        console.error('API usage reset error:', error);
+        res.status(500).json({ error: 'API usage reset failed' });
+    }
+});
 
 // Serve React app for any non-API routes
 app.get('*', (req, res) => {
