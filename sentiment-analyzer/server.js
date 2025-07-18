@@ -37,7 +37,7 @@ const errorHandler = new ErrorHandler();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'dashboard/build')));
+// app.use(express.static(path.join(__dirname, 'dashboard/build')));
 
 // WebSocket server for real-time updates
 const wss = new WebSocket.Server({ port: 8080 });
@@ -1570,7 +1570,15 @@ app.post('/api/monitoring/api-usage/reset', async (req, res) => {
 
 // Serve React app for any non-API routes
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard/build', 'index.html'));
+    res.json({ 
+        message: 'Sentiment Analyzer API v2.0.0',
+        status: 'running',
+        endpoints: {
+            health: '/api/health',
+            analyze: '/api/analyze',
+            monitoring: '/api/monitoring/health'
+        }
+    });
 });
 
 // Error handling middleware
