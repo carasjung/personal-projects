@@ -5,34 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test-ai-integration.js",
-    "test-enhanced": "node enhanced-test-ai-integration.js",
-    "setup": "node setup-enhanced.js",
-    "analyze": "node src/cli/analyze-brand.js",
-    "dashboard": "cd dashboard && npm start",
-    "dashboard:build": "cd dashboard && npm run build",
-    "dashboard:install": "cd dashboard && npm install",
-    "server": "node server.js",
-    "server:dev": "nodemon server.js",
-    "client:dev": "cd dashboard && npm start",
-    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
-    "install:all": "npm install && cd dashboard && npm install",
-    "build": "cd dashboard && npm run build",
-    "prod": "npm run build && npm start"
+    "build": "echo 'Build completed - backend only'"
   },
   "keywords": [
     "sentiment-analysis",
     "ai",
     "hugging-face",
     "groq",
-    "ollama",
-    "social-media",
-    "brand-monitoring",
-    "nlp",
-    "machine-learning",
-    "dashboard",
-    "websocket",
-    "real-time"
+    "ollama"
   ],
   "author": "Your Name",
   "license": "MIT",
@@ -41,47 +21,19 @@
     "axios": "^1.6.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.12",
-    "cli-progress": "^3.12.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.21.2",
     "groq-sdk": "^0.3.3",
-    "inquirer": "^8.2.6",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "node-cron": "^3.0.3",
-    "ollama": "^0.4.9",
-    "path": "^0.12.7",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "ws": "^8.18.3",
     "helmet": "^7.1.0",
     "compression": "^1.7.4",
     "morgan": "^1.10.0"
   },
-  "devDependencies": {
-    "@types/node": "^20.10.4",
-    "concurrently": "^9.2.0",
-    "eslint": "^8.55.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.2",
-    "playwright": "^1.40.1",
-    "puppeteer": "^21.5.2"
-  },
-  "optionalDependencies": {
-    "canvas": "^2.11.2",
-    "sharp": "^0.32.6"
-  },
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/ai-sentiment-analyzer.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yourusername/ai-sentiment-analyzer/issues"
-  },
-  "homepage": "https://github.com/yourusername/ai-sentiment-analyzer#readme"
+  }
 }
