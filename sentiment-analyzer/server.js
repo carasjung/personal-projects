@@ -7,10 +7,10 @@ require('dotenv').config();
 
 // Import existing components
 const UniversalYouTubeScraper = require('./src/scrapers/UniversalYouTubeScraper');
-const QuoraChromeScraper = require('./src/scrapers/QuoraChromeScraper');
+// const QuoraChromeScraper = require('./src/scrapers/QuoraChromeScraper');
 const { RedditScraper, TwitterScraper } = require('./src/scrapers/SocialMediaScrapers');
 const EnhancedSentimentOrchestrator = require('./src/agents/EnhancedSentimentOrchestrator');
-const { AutomatedQuoraChromeScraper } = require('./src/utils/AutomatedChromeManager');
+// const { AutomatedQuoraChromeScraper } = require('./src/utils/AutomatedChromeManager');
 const HuggingFaceFirstSentimentAnalyzer = require('./src/agents/HuggingFaceFirstSentimentAnalyzer');
 const DetailedPlatformSummaryGenerator = require('./src/agents/DetailedPlatformSummaryGenerator');
 
@@ -391,10 +391,10 @@ async function runSentimentAnalysis(sessionId, brandConfig) {
             });
             
             try {
-                const automatedQuoraScraper = new AutomatedQuoraChromeScraper();
+                // const automatedQuoraScraper = new AutomatedQuoraChromeScraper(); // This line is commented out
                 
                 console.log('🤔 Using automated Quora scraper...');
-                multiPlatformData.quora = await automatedQuoraScraper.scrapeBrandSentiment(brandConfig);
+                // multiPlatformData.quora = await automatedQuoraScraper.scrapeBrandSentiment(brandConfig); // This line is commented out
                 
                 console.log(`🤔 Quora collected: ${multiPlatformData.quora.length} discussions`);
                 
