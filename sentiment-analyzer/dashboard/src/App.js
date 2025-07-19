@@ -382,6 +382,11 @@ function App() {
   // Get API base URL
   const getApiUrl = (endpoint) => {
     const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    console.log('🔧 Environment check:', {
+      REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+      NODE_ENV: process.env.NODE_ENV,
+      baseUrl: baseUrl
+    });
     return `${baseUrl}${endpoint}`;
   };
 
