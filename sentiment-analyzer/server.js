@@ -37,7 +37,7 @@ const errorHandler = new ErrorHandler();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.vercel.app', 'https://your-frontend-domain.vercel.app']
+    ? ['https://agent-scraper-5iznr4can-caras-projects-afd78f2d.vercel.app']
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
