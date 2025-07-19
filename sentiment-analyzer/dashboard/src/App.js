@@ -381,7 +381,7 @@ function App() {
 
   // Get API base URL
   const getApiUrl = (endpoint) => {
-    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    const baseUrl = process.env.REACT_APP_API_URL || 'https://agent-scraper-backend.onrender.com';
     console.log('🔧 Environment check:', {
       REACT_APP_API_URL: process.env.REACT_APP_API_URL,
       NODE_ENV: process.env.NODE_ENV,
