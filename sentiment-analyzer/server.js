@@ -38,21 +38,30 @@ const errorHandler = new ErrorHandler();
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log('🔧 CORS check - Origin:', origin);
+    console.log('🔧 CORS check - NODE_ENV:', process.env.NODE_ENV);
+    
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('🔧 CORS: Allowing request with no origin');
+      return callback(null, true);
+    }
     
     if (process.env.NODE_ENV === 'production') {
       // Allow any Vercel domain
       if (origin.includes('vercel.app') || origin.includes('localhost')) {
+        console.log('🔧 CORS: Allowing Vercel domain:', origin);
         return callback(null, true);
       }
     } else {
       // Development - allow localhost
       if (origin.includes('localhost')) {
+        console.log('🔧 CORS: Allowing localhost:', origin);
         return callback(null, true);
       }
     }
     
+    console.log('🔧 CORS: Blocking origin:', origin);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -238,10 +247,12 @@ const analysisManager = new AnalysisManager();
 
 // Health check
 app.get('/api/health', (req, res) => {
+    console.log('🔧 Health check requested from:', req.headers.origin);
     res.json({ 
         status: 'healthy', 
         timestamp: new Date().toISOString(),
-        version: '2.0.0'
+        version: '2.0.0',
+        cors_working: true
     });
 });
 
