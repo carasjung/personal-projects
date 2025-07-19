@@ -7,7 +7,9 @@ A powerful, multi-platform sentiment analysis platform that uses AI agents to an
 **Frontend (Vercel):** [https://agent-scraper.vercel.app](https://agent-scraper.vercel.app)  
 **Backend (Render):** [https://agent-scraper-backend.onrender.com](https://agent-scraper-backend.onrender.com)
 
-![Agent Scraper Logo](dashboard/public/favicon-as.png)
+<div align="center">
+  <img src="dashboard/public/logo.png" alt="Agent Scraper Logo" width="200" height="100">
+</div>
 
 ## 🌟 Features
 
