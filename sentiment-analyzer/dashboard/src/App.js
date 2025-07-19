@@ -381,7 +381,8 @@ function App() {
 
   // Get API base URL
   const getApiUrl = (endpoint) => {
-    return `https://sentiment-analyzer-api-xyz.vercel.app${endpoint}`;
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    return `${baseUrl}${endpoint}`;
   };
 
   // Get WebSocket URL
