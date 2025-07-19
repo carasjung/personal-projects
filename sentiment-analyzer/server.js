@@ -74,7 +74,7 @@ app.use(express.json());
 // app.use(express.static(path.join(__dirname, 'dashboard/build')));
 
 // WebSocket server for real-time updates
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ noServer: true });
 
 // Active analysis sessions
 const activeSessions = new Map();
@@ -1627,11 +1627,24 @@ app.use((error, req, res, next) => {
 });
 
 // Start server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Sentiment Analysis Dashboard running on port ${port}`);
     console.log(`Dashboard: http://localhost:${port}`);
-    console.log(`WebSocket: ws://localhost:8080`);
+    console.log(`WebSocket: ws://localhost:${port}/ws`);
     console.log(`Health check: http://localhost:${port}/api/health`);
+});
+
+// Attach WebSocket server to HTTP server
+server.on('upgrade', (request, socket, head) => {
+    const pathname = new URL(request.url, `http://${request.headers.host}`).pathname;
+    
+    if (pathname === '/ws') {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            wss.emit('connection', ws, request);
+        });
+    } else {
+        socket.destroy();
+    }
 });
 
 // Graceful shutdown
