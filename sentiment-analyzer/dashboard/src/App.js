@@ -393,7 +393,7 @@ function App() {
   // Get WebSocket URL
   const getWebSocketUrl = () => {
     return process.env.NODE_ENV === 'production' 
-      ? `wss://${window.location.host}/ws` 
+      ? 'wss://agent-scraper-backend.onrender.com/ws' 
       : 'ws://localhost:8080';
   };
 
