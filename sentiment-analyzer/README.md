@@ -2,7 +2,7 @@
 
 A powerful, multi-platform sentiment analysis platform that uses AI agents to analyze brand sentiment across social media platforms. Built with Node.js, React, and multiple AI models including Hugging Face, Groq, and Ollama.
 
-<div align="center">
+<div align="left">
   <img src="dashboard/public/logo.png" alt="Agent Scraper Logo" width="200" height="100">
 </div>
 
