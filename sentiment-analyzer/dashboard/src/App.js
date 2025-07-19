@@ -499,7 +499,16 @@ function App() {
     setIsAnalyzing(true);
     
     try {
-      const response = await fetch(getApiUrl('/api/analyze'), {
+      const apiUrl = getApiUrl('/api/analyze');
+      console.log('🔍 Attempting to call API:', apiUrl);
+      console.log('🔍 Request payload:', {
+        brandName: brandForm.brandName.trim(),
+        category: brandForm.category,
+        keywords: brandForm.keywords.split(',').map(k => k.trim()).filter(k => k),
+        platforms: brandForm.platforms
+      });
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -512,7 +521,11 @@ function App() {
         }),
       });
       
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response headers:', response.headers);
+      
       const result = await response.json();
+      console.log('🔍 Response data:', result);
       
       if (response.ok && result.success) {
         console.log('Analysis started:', result.sessionId);
@@ -522,7 +535,12 @@ function App() {
       }
       
     } catch (error) {
-      console.error('Error starting analysis:', error);
+      console.error('❌ Error starting analysis:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       alert(`Error starting analysis: ${error.message}`);
       setIsAnalyzing(false);
     }
