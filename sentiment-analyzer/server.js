@@ -35,14 +35,32 @@ const cacheManager = new CacheManager();
 const errorHandler = new ErrorHandler();
 
 // Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://agent-scraper-5iznr4can-caras-projects-afd78f2d.vercel.app']
-    : ['http://localhost:3000', 'http://localhost:3001'],
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (process.env.NODE_ENV === 'production') {
+      // Allow any Vercel domain
+      if (origin.includes('vercel.app') || origin.includes('localhost')) {
+        return callback(null, true);
+      }
+    } else {
+      // Development - allow localhost
+      if (origin.includes('localhost')) {
+        return callback(null, true);
+      }
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 // app.use(express.static(path.join(__dirname, 'dashboard/build')));
 
