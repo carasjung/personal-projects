@@ -1,51 +1,57 @@
-# Personal Projects
+# <img src="./dashboard/src/agent-scraper-logo.svg" alt="Agent Scraper Logo" width="48" style="vertical-align:middle;"/> Agent Scraper
 
-This repository contains various personal projects and experiments.
-
-## Song Nerd App - AI Music Marketing Platform
-**Tech Stack:** Next.js, Python, FastAPI, Supabase, AI/ML  
-**Description:** AI-powered music marketing platform that analyzes audio files and provides demographic targeting, platform recommendations, and marketing insights for artists.
-
-**Features:**
-- Drag-and-drop audio upload with real-time processing
-- AI-powered audio feature extraction and analysis  
-- Target demographic prediction with confidence scoring
-- Platform-specific marketing recommendations (Spotify, TikTok, Instagram)
-- Similar artist discovery and matching
-- Automated marketing copy generation
-- Artist dashboard with analytics and performance tracking
-
-**Location:** `./song-nerd-app/`
-
-**Demo:** [Coming Soon - Deploy to Vercel]
+A multi-platform brand sentiment analysis platform powered by AI agents. Agent Scraper collects, analyzes, and summarizes brand sentiment from YouTube, Reddit, Twitter, and Quora, providing actionable insights and professional reports in real time.
 
 ---
 
-## Agent Scraper - Brand Sentiment Analysis Platform
-**Tech Stack:** Node.js, React, Express, WebSocket, AI/ML (Hugging Face, Groq, Ollama)  
-**Description:** Multi-platform sentiment analysis platform that uses AI agents to analyze brand sentiment across social media platforms with real-time dashboard and export capabilities.
-
-**Features:**
-- Multi-platform data collection (YouTube, Reddit, Twitter, Quora)
-- AI-powered sentiment and emotion analysis with multiple models
-- Real-time WebSocket-powered dashboard with live progress tracking
-- Platform-specific summaries and strategic insights generation
-- Export capabilities (PDF, CSV, JSON) with professional reporting
-- Chrome-based scraping for authenticated platforms
-- Brand health assessment with actionable recommendations
-
-**Location:** `./sentiment-analyzer/`
-
-**Demo:** [Frontend](https://agent-scraper.vercel.app) | [Backend](https://agent-scraper-backend.onrender.com)
+## Features
+- **Multi-Platform Data Collection:** Scrapes and aggregates data from YouTube, Reddit, Twitter, and Quora.
+- **AI-Powered Sentiment & Emotion Analysis:** Utilizes multiple models (Hugging Face, Groq, Ollama) for robust sentiment and emotion detection.
+- **Real-Time Dashboard:** Live progress tracking and updates via WebSocket-powered dashboard.
+- **Platform-Specific Summaries:** Generates detailed summaries and strategic insights for each platform.
+- **Export Capabilities:** Download professional reports in PDF, CSV, or JSON formats.
+- **Chrome-Based Scraping:** Supports authenticated scraping for platforms requiring login.
+- **Brand Health Assessment:** Provides actionable recommendations based on sentiment trends.
 
 ---
 
-## Contracts Parser
-**Tech Stack:** Python, NLP  
-**Description:** Document parsing and analysis tool  
-**Location:** `./contracts-parser/`
+## Tech Stack
+- **Frontend:** React, WebSocket
+- **Backend:** Node.js, Express
+- **AI/ML:** Hugging Face, Groq, Ollama
 
 ---
 
-## Other Projects
-More projects coming soon... 
+## Quick Start
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/agent-scraper.git
+   ```
+2. **Install dependencies:**
+   ```bash
+   cd sentiment-analyzer
+   npm install
+   cd dashboard
+   npm install
+   ```
+3. **Run the backend:**
+   ```bash
+   cd ..
+   node server.js
+   ```
+4. **Run the frontend:**
+   ```bash
+   cd dashboard
+   npm start
+   ```
+
+---
+
+## Demo
+- **Frontend:** [https://agent-scraper.vercel.app](https://agent-scraper.vercel.app)
+- **Backend:** [https://agent-scraper-backend.onrender.com](https://agent-scraper-backend.onrender.com)
+
+---
+
+## Logo
+<img src="./dashboard/src/agent-scraper-logo.svg" alt="Agent Scraper Logo" width="120"/> 
