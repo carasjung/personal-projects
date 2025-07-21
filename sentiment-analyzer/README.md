@@ -6,7 +6,7 @@
 
 Agent Scraper is a comprehensive, AI-powered platform for real-time brand sentiment analysis across major social media platforms. Designed for marketing teams, brand managers, and analysts, it automates the collection, analysis, and reporting of public sentiment, providing actionable insights to inform brand strategy and reputation management.
 
-## What is Agent Scraper?
+## Overview
 Agent Scraper leverages advanced AI agents to gather and analyze data from YouTube, Reddit, Twitter, and Quora. It delivers:
 - **Live sentiment and emotion analysis** using multiple AI/ML models (Hugging Face, Groq, Ollama)
 - **Platform-specific summaries** and strategic recommendations
