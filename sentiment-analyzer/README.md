@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./dashboard/src/agent-scraper-logo.svg" alt="Agent Scraper Logo" width="180"/>
+  <img src="./dashboard/src/agent-scraper-logo.svg" alt="Agent Scraper Logo" width="350"/>
 </p>
 
 ---
@@ -34,6 +34,10 @@ Agent Scraper leverages advanced AI agents to gather and analyze data from YouTu
 - **Backend:** Node.js/Express server orchestrating scraping, analysis, and reporting
 - **AI/ML:** Integrates Hugging Face, Groq, and Ollama models for sentiment and emotion detection
 - **Scrapers:** Modular agents for each supported platform
+
+<p align="center">
+  <img src="agent-scraper-architecture.png" alt="Agent Scraper Architecture Diagram" width="600" />
+</p>
 
 ## Quick Start
 1. **Clone the repository:**
